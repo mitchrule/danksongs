@@ -30,6 +30,9 @@ import React, { Component } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import SimpleReactLightbox from "simple-react-lightbox";
 import LoginPage from "./components/LoginPage";
+import SignupPage from "./components/SignupPage";
+import VotePage from "./components/VotePage";
+import PlaylistPage from "./components/PlaylistPage";
 
 class App extends Component {
   render() {
@@ -41,6 +44,9 @@ class App extends Component {
               {/* Don't touch this wrapper, needed for gallery */}
               <Switch>
                 <Route exact path="/" component={LoginPage} />
+                <Route exact path="/signup" component={SignupPage} />
+                <Route exact path="/vote" component={VotePage} />
+                <Route exact path="/playlist" component={PlaylistPage} />
               </Switch>
             </SimpleReactLightbox>
           </div>
