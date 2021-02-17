@@ -1,64 +1,67 @@
+import axios from "axios";
 import React, { Component } from "react";
 import {
   Container,
   Form,
-  Card,
-  Badge,
-  Col,
-  Button,
   Row,
 } from "react-bootstrap";
-import Center from 'react-center';
+import Center from "react-center";
 import { Link } from "react-router-dom";
+import Button from 'react-bootstrap/Button';
 
 class SignupPage extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-          newusername: "",
-          newpassword: "",
-        };
-      }
+  constructor(props) {
+    super(props);
+    this.state = {
+      newusername: "",
+      newpassword: "",
+    };
+  }
 
-      onChange = (e) => {
-        this.setState({
-          [e.target.id]: e.target.value,
-        });
-    
-        this.setState({
-          waiting: false,
-        });
-      };
-    
-      onSubmit = (e) => {
-        e.preventDefault();
-    
-        this.setState({
-          waiting: true,
-        });
-    
-        const userData = {
-          email: this.state.newemail,
-          password: this.state.newpassword,
-        };
-        axios
-        .post("/api/signup", userData)
-        .then((res) => {
-            console.log("Signup success with res.data =", res.data);
-            history.push("/");
-            })
-        .catch((err) => {
+  onChange = (e) => {
+    this.setState({
+      [e.target.id]: e.target.value,
+    });
+
+    console.log(this.state);
+  };
+
+  onSubmit = (e) => {
+    console.log("Submitting");
+
+    e.preventDefault();
+
+    this.setState({
+      waiting: true,
+    });
+
+    const userData = {
+      newusername: this.state.newusername,
+      newpassword: this.state.newpassword,
+    };
+
+    console.log("Submitting Data...");
+    axios
+      .post("/api/signup", userData)
+      .then((res) => {
+        console.log("Signup success with data =", res);
+        this.props.history.push("/");
+      })
+
+      .catch((err) => {
         console.log("Signup failed, Errors:");
-        console.log(err);   
-        });
-      };
+        console.log(err);
+      });
+  };
 
   render() {
+
+    {{console.log(this.state)}}
     return (
       <Container>
         <Center>
           <Row>
-            <Form>
+            <Form onSubmit={this.onSubmit}>
               <Form.Group controlId="newusername">
                 <Form.Label>New Username</Form.Label>
                 <Form.Control
@@ -80,11 +83,9 @@ class SignupPage extends Component {
             </Form>
           </Row>
           <Row>
-          <Link to="/">
-            <Button className="display-btn" variant="primary" type="submit">
-                Create New Account
+            <Button className="display-btn" variant="primary" onclick="submit">
+              Create New Account
             </Button>
-        </Link>
           </Row>
         </Center>
       </Container>

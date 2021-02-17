@@ -2,8 +2,8 @@ import React, { Component } from "react";
 
 class VotePage extends Component {
   render() {
-    return (true)
-    }
+    return true;
+  }
 }
 
 export default VotePage;
