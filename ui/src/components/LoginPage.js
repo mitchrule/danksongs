@@ -21,6 +21,7 @@ class LoginPage extends Component {
 
   onSubmit = (e) => {
     e.preventDefault();
+    console.log("Submitting Data...");
 
     this.setState({
       waiting: true,
@@ -45,16 +46,16 @@ class LoginPage extends Component {
   render() {
     //{{console.log(this.state)}}
     return (
-        <Container fluid="md">
-          <Row>
-            <Col>
+      <Container fluid="md">
+        <Row>
+          <Col>
             <Center>
-            <h1>Dank Songs</h1>
+              <h1>Dank Songs</h1>
             </Center>
-            </Col>
-          </Row>
-          <Row>
-           <Col md={{ span: 6, offset: 3 }}>
+          </Col>
+        </Row>
+        <Row>
+          <Col md={{ span: 6, offset: 3 }}>
             <Form onSubmit={this.onSubmit}>
               <Form.Group controlId="username">
                 <Form.Label>Username</Form.Label>
@@ -72,43 +73,41 @@ class LoginPage extends Component {
                   onChange={this.onChange}
                 />
               </Form.Group>
+              <Form.Group>
+                <Center>
+                  <Button
+                    className="display-btn"
+                    variant="success"
+                    type="submit"
+                  >
+                    Login
+                  </Button>
+                </Center>
+              </Form.Group>
             </Form>
-            </Col>
-          </Row>
-          <Row>
-            <Col>
-            <Center>
-              <Button className="display-btn" variant="success" type="submit">
-                Login
-              </Button>
-            </Center>
-            </Col>
-          </Row>
-          <p />
-          <Row>
-            
-            <Col>
-            <Center>
-            <Link to="/signup">
-              <Button variant="primary">Go To Sign Up Page</Button>
-            </Link>
-            </Center>
-            </Col>
-           
-          </Row>
-          <Row>
-            
-            <Col>
-            <Center>
-            <Link to="/playlist">
-              <Button variant="primary">View Playlist</Button>
-            </Link>
-            </Center>
-            </Col>
-            
-          </Row>
-        </Container>
+          </Col>
+        </Row>
 
+        <p />
+        <Row>
+          <Col>
+            <Center>
+              <Link to="/signup">
+                <Button variant="primary">Go To Sign Up Page</Button>
+              </Link>
+            </Center>
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+            <Center>
+              <Link to="/playlist">
+                <Button variant="primary">View Playlist</Button>
+              </Link>
+            </Center>
+          </Col>
+        </Row>
+      </Container>
     );
   }
 }

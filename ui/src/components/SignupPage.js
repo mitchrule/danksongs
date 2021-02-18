@@ -1,6 +1,6 @@
 import axios from "axios";
 import React, { Component } from "react";
-import { Container, Form, Row } from "react-bootstrap";
+import { Container, Form, Row, Col } from "react-bootstrap";
 import Center from "react-center";
 import { Link } from "react-router-dom";
 import Button from "react-bootstrap/Button";
@@ -23,6 +23,7 @@ class SignupPage extends Component {
   };
 
   onSubmit = (e) => {
+    e.preventDefault();
     console.log("Submitting");
 
     e.preventDefault();
@@ -58,8 +59,8 @@ class SignupPage extends Component {
     }
     return (
       <Container>
-        <Center>
-          <Row>
+        <Row>
+          <Col md={{ span: 6, offset: 3 }}>
             <Form onSubmit={this.onSubmit}>
               <Form.Group controlId="newusername">
                 <Form.Label>New Username</Form.Label>
@@ -79,14 +80,26 @@ class SignupPage extends Component {
                   defaultValue={this.state.newpassword}
                 />
               </Form.Group>
+              <Form.Group>
+                <Center>
+                  <Button variant="primary" type="submit">
+                    Create New Account
+                  </Button>
+                </Center>
+              </Form.Group>
             </Form>
-          </Row>
-          <Row>
-            <Button className="display-btn" variant="primary" type="submit">
-              Create New Account
-            </Button>
-          </Row>
-        </Center>
+          </Col>
+        </Row>
+        <p />
+        <Row>
+          <Col>
+            <Center>
+              <Link to="/">
+                <Button variant="warning">Back to Login Page</Button>
+              </Link>
+            </Center>
+          </Col>
+        </Row>
       </Container>
     );
   }
