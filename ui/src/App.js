@@ -26,6 +26,7 @@ function App() {
 export default App;
 */
 
+
 import React, { Component } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import SimpleReactLightbox from "simple-react-lightbox";
@@ -33,6 +34,8 @@ import LoginPage from "./components/LoginPage";
 import SignupPage from "./components/SignupPage";
 import VotePage from "./components/VotePage";
 import PlaylistPage from "./components/PlaylistPage";
+import "bootstrap/dist/css/bootstrap.min.css";
+import "./app.css";
 
 class App extends Component {
   render() {
@@ -40,8 +43,6 @@ class App extends Component {
         <Router>
           <div className="app">
             <SimpleReactLightbox>
-              {" "}
-              {/* Don't touch this wrapper, needed for gallery */}
               <Switch>
                 <Route exact path="/" component={LoginPage} />
                 <Route exact path="/signup" component={SignupPage} />
