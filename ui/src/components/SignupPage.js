@@ -1,13 +1,9 @@
 import axios from "axios";
 import React, { Component } from "react";
-import {
-  Container,
-  Form,
-  Row,
-} from "react-bootstrap";
+import { Container, Form, Row } from "react-bootstrap";
 import Center from "react-center";
 import { Link } from "react-router-dom";
-import Button from 'react-bootstrap/Button';
+import Button from "react-bootstrap/Button";
 
 class SignupPage extends Component {
   constructor(props) {
@@ -55,8 +51,11 @@ class SignupPage extends Component {
   };
 
   render() {
-
-    {{console.log(this.state)}}
+    {
+      {
+        console.log(this.state);
+      }
+    }
     return (
       <Container>
         <Center>
@@ -83,7 +82,7 @@ class SignupPage extends Component {
             </Form>
           </Row>
           <Row>
-            <Button className="display-btn" variant="primary" onclick="submit">
+            <Button className="display-btn" variant="primary" type="submit">
               Create New Account
             </Button>
           </Row>
