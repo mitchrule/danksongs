@@ -33,13 +33,13 @@ class SignupPage extends Component {
     });
 
     const userData = {
-      newusername: this.state.newusername,
-      newpassword: this.state.newpassword,
+      Name: this.state.newusername,
+      Password: this.state.newpassword,
     };
 
     console.log("Submitting Data...");
     axios
-      .post("/api/signup", userData)
+      .post("/newuser", userData)
       .then((res) => {
         console.log("Signup success with data =", res);
         this.props.history.push("/");
