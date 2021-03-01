@@ -2,6 +2,7 @@ package actions
 
 import (
 	"context"
+	"errors"
 	"log"
 	"os"
 	"time"
@@ -9,7 +10,9 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/mitchrule/danksongs/database"
 	"github.com/mitchrule/danksongs/models"
+
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -23,14 +26,11 @@ func CreateUser(user models.User) error {
 	user.Password = getHash([]byte(user.Password))
 
 	// Check the username has not already been used
-	// TODO## finish this
-	/*
-		err := database.UsersCollection.FindOne(ctx, bson.M{"name": user.Name}).Err()
-		if err == nil {
-			log.Println("Duplicate User...")
-			return errors.Errorf("Duplicate User")
-		}
-	*/
+	err := database.UsersCollection.FindOne(ctx, bson.M{"name": user.Name}).Err()
+	if err != mongo.ErrNoDocuments {
+		log.Println("Duplicate User...")
+		return errors.New("Duplicate user")
+	}
 
 	// Place in db otherwise
 	insertResult, err := database.UsersCollection.InsertOne(ctx, user)
@@ -68,7 +68,9 @@ func LoginUser(user models.User) (string, error) {
 		log.Println(passErr)
 		return "", passErr
 	}
+
 	jwtToken, err := GenerateJWT()
+
 	if err != nil {
 		return "", err
 	}
