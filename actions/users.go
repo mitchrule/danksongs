@@ -16,18 +16,31 @@ import (
 // CreateUser adds a user to the database
 func CreateUser(user models.User) error {
 	log.Println("Creating user...")
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 
 	// Hash the users password for storage
 	user.Password = getHash([]byte(user.Password))
 
+	// Check the username has not already been used
+	// TODO## finish this
+	/*
+		err := database.UsersCollection.FindOne(ctx, bson.M{"name": user.Name}).Err()
+		if err == nil {
+			log.Println("Duplicate User...")
+			return errors.Errorf("Duplicate User")
+		}
+	*/
+
+	// Place in db otherwise
 	insertResult, err := database.UsersCollection.InsertOne(ctx, user)
 
 	if err != nil {
+		log.Println("user insert error")
+		log.Println(err)
 		return err
 	}
-
+	log.Println("Inserted: ", user)
 	log.Println("Inserted: ", insertResult)
 	return nil
 }
@@ -79,11 +92,14 @@ func getHash(pwd []byte) string {
 // GenerateJWT generates a JWT token for a particuar session
 func GenerateJWT() (string, error) {
 
-	secretKey := os.Getenv("SECRET_KEY")
+	secretKey := []byte(os.Getenv("SECRET_KEY"))
 	token := jwt.New(jwt.SigningMethodHS256)
 	tokenString, err := token.SignedString(secretKey)
+
+	log.Println(tokenString)
 	if err != nil {
 		log.Println("Error in JWT token generation")
+		log.Println(err)
 		return "", err
 	}
 	return tokenString, nil

@@ -25,6 +25,7 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 			log.Fatal(err)
 		}
 
+		log.Println("Writing error payload..")
 		w.Write(payload)
 	}
 
@@ -37,15 +38,22 @@ func CreateUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = json.Unmarshal(body, &user)
 	if err != nil {
+		log.Println("--Internal error in unmarshalling--")
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
 	err = actions.CreateUser(user)
 	if err != nil {
+		log.Println("--Internal error in action--")
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
-	w.WriteHeader(http.StatusCreated)
+	if err == nil {
+		w.WriteHeader(http.StatusCreated)
+	}
+
 }
 
 // LoginUserHandler manages the http request
@@ -71,11 +79,13 @@ func LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
+		log.Println(err)
 	}
 
 	err = json.Unmarshal(body, &user)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		log.Println(err)
 	}
 
 	jwtToken, err := actions.LoginUser(user)
@@ -83,6 +93,8 @@ func LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
-	w.WriteHeader(http.StatusCreated)
-	w.Write([]byte(`{"token":"` + jwtToken + `"}`))
+	if err == nil {
+		w.WriteHeader(http.StatusCreated)
+		w.Write([]byte(`{"token":"` + jwtToken + `"}`))
+	}
 }
