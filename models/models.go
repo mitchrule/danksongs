@@ -2,6 +2,13 @@ package models
 
 import "go.mongodb.org/mongo-driver/bson/primitive"
 
+// User - Models a user and their associated credentials
+type User struct {
+	ID       primitive.ObjectID `bson:"id,omitempty"`
+	Name     string             `bson:"name,omitempty"`
+	Password string             `bson:"password"`
+}
+
 // Song - Models a song
 type Song struct {
 	ID     primitive.ObjectID `bson:"id,omitempty"`

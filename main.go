@@ -10,6 +10,7 @@ import (
 )
 
 func main() {
+
 	err := godotenv.Load(".env")
 	if err != nil {
 		log.Fatal(err)
@@ -23,5 +24,7 @@ func main() {
 		Addr:    ":8080",
 		Handler: router,
 	}
+	log.Println("Listening on 8080...")
 	s.ListenAndServe()
+
 }

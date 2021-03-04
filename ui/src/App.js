@@ -35,7 +35,7 @@ import SignupPage from "./components/SignupPage";
 import VotePage from "./components/VotePage";
 import PlaylistPage from "./components/PlaylistPage";
 import "bootstrap/dist/css/bootstrap.min.css";
-import "./app.css";
+import "./App.css";
 
 class App extends Component {
   render() {
