@@ -19,8 +19,8 @@ func NewRouter() *mux.Router {
 		w.Write([]byte("Hello world!"))
 	})
 	r.HandleFunc("/song", CreateSongHandler).Methods("POST")
-	r.HandleFunc("/newuser", CreateUserHandler).Methods("POST")
-	r.HandleFunc("/loginuser", LoginUserHandler).Methods("POST")
+	r.HandleFunc("/user", CreateUserHandler).Methods("POST")
+	r.HandleFunc("/user/login", LoginUserHandler).Methods("POST")
 
 	return r
 }
