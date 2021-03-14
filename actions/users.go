@@ -69,13 +69,90 @@ func LoginUser(user models.User) (string, error) {
 		return "", passErr
 	}
 
-	jwtToken, err := GenerateJWT()
+	// Generate the claims for the JWT token for this session
+	expirationTime := time.Now().Add(5 * time.Minute)
+
+	// Create a claim based on user info
+	claim := models.Claims{
+		Username: user.Name,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: expirationTime.Unix(),
+		},
+	}
+
+	// Place in db otherwise
+	insertResult, err := database.UsersCollection.InsertOne(ctx, claim)
+	if err != nil {
+		log.Println("token insert error")
+		log.Println(err)
+		return "", err
+	}
+
+	log.Println("Inserted: ", insertResult)
+	jwtToken, err := GenerateJWT(claim)
 
 	if err != nil {
 		return "", err
 	}
-
 	return jwtToken, nil
+}
+
+// Validate user token checks their JTW token is valid before acessing the API
+func ValidateUserToken(tknStr string) (bool, error) {
+	// We can obtain the session token from the requests cookies, which come with every request
+
+	/*
+		c, err := r.Cookie("token")
+		if err != nil {
+			if err == http.ErrNoCookie {
+				// If the cookie is not set, return an unauthorized status
+				w.WriteHeader(http.StatusUnauthorized)
+				return
+			}
+			// For any other type of error, return a bad request status
+			w.WriteHeader(http.StatusBadRequest)
+			return
+		}
+	*/
+
+	// Get the JWT string from the cookie
+	//tknStr := c.Value
+
+	// Initialize a new instance of `Claims`
+	claim := &models.Claims{}
+
+	// Parse the JWT string and store the result in `claims`.
+	// Note that we are passing the key in this method as well. This method will return an error
+	// if the token is invalid (if it has expired according to the expiry time we set on sign in),
+	// or if the signature does not match
+	tkn, err := jwt.ParseWithClaims(tknStr, claim, func(token *jwt.Token) (interface{}, error) {
+		// I dont like that for this to work we have to return our secret key
+		// Will fix if I can
+		return []byte(os.Getenv("SECRET_KEY")), nil
+	})
+	if err != nil {
+		log.Println("Error...")
+		if err == jwt.ErrSignatureInvalid {
+			//w.WriteHeader(http.StatusUnauthorized)
+			//return
+			log.Println("Signature Invalid")
+			return false, err
+		}
+		//w.WriteHeader(http.StatusBadRequest)
+		//return
+		return false, err
+	}
+	if !tkn.Valid {
+		log.Println("Token Invalid")
+		return false, err
+	}
+
+	// Finally, return the welcome message to the user, along with their
+	// username given in the token
+
+	return true, nil
+
+	//w.Write([]byte(fmt.Sprintf("Welcome %s!", claims.Username)))
 }
 
 ///////////////////////////////////////////////////
@@ -92,10 +169,12 @@ func getHash(pwd []byte) string {
 }
 
 // GenerateJWT generates a JWT token for a particuar session
-func GenerateJWT() (string, error) {
+// Delete if other method is better
+
+func GenerateJWT(claim models.Claims) (string, error) {
 
 	secretKey := []byte(os.Getenv("SECRET_KEY"))
-	token := jwt.New(jwt.SigningMethodHS256)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
 	tokenString, err := token.SignedString(secretKey)
 
 	log.Println(tokenString)
