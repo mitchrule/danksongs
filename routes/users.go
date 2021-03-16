@@ -96,7 +96,23 @@ func LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 
 	if err == nil {
 		w.WriteHeader(http.StatusCreated)
-		w.Write([]byte(`{"token":"` + jwtToken + `"}`))
+		//w.Write([]byte(`{"token":"` + jwtToken + `"}`))
+
+		bearerToken := "Bearer " + jwtToken
+
+		r.Header.Add("Authorization", bearerToken)
+
+		log.Println("Authorisation token has been set to: ")
+		log.Println(r.Header.Get("authorization"))
+
+		// Set the JWT token as a cookie in the user browser
+		/*
+			http.SetCookie(w, &http.Cookie{
+				Name:    "token",
+				Value:   jwtToken,
+				Expires: expirationTime,
+			})
+		*/
 	}
 }
 
@@ -104,8 +120,10 @@ func LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 func AuthenticateJWTMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		// Returive the cookie from the http request
+		/* Returive the cookie from the http request
 		c, err := r.Cookie("token")
+
+		log.Println("Cookie:", c)
 		if err != nil {
 			if err == http.ErrNoCookie {
 				// If the cookie is not set, return an unauthorized status
@@ -116,9 +134,13 @@ func AuthenticateJWTMiddleware(next http.Handler) http.Handler {
 			w.WriteHeader(http.StatusBadRequest)
 			return
 		}
+		*/
+
+		// Get the token from the auth header
+		tokenString := r.Header.Get("Authorization")
 
 		// Extract the token from the http cookie
-		tokenString := c.Value
+		//tokenString := c.Value
 		log.Println(tokenString)
 
 		// Split the token string into two parts

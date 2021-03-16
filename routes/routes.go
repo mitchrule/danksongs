@@ -18,7 +18,11 @@ func NewRouter() *mux.Router {
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("Hello world!"))
 	})
+
+	// See if this works
+	r.Handle("/song", AuthenticateJWTMiddleware(r)).Methods("POST")
 	r.HandleFunc("/song", CreateSongHandler).Methods("POST")
+
 	r.HandleFunc("/user", CreateUserHandler).Methods("POST")
 	r.HandleFunc("/user/login", LoginUserHandler).Methods("POST")
 

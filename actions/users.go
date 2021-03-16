@@ -101,23 +101,6 @@ func LoginUser(user models.User) (string, error) {
 func ValidateUserToken(tknStr string) (bool, error) {
 	// We can obtain the session token from the requests cookies, which come with every request
 
-	/*
-		c, err := r.Cookie("token")
-		if err != nil {
-			if err == http.ErrNoCookie {
-				// If the cookie is not set, return an unauthorized status
-				w.WriteHeader(http.StatusUnauthorized)
-				return
-			}
-			// For any other type of error, return a bad request status
-			w.WriteHeader(http.StatusBadRequest)
-			return
-		}
-	*/
-
-	// Get the JWT string from the cookie
-	//tknStr := c.Value
-
 	// Initialize a new instance of `Claims`
 	claim := &models.Claims{}
 
@@ -130,15 +113,15 @@ func ValidateUserToken(tknStr string) (bool, error) {
 		// Will fix if I can
 		return []byte(os.Getenv("SECRET_KEY")), nil
 	})
+	log.Panicln(claim)
+
 	if err != nil {
 		log.Println("Error...")
 		if err == jwt.ErrSignatureInvalid {
-			//w.WriteHeader(http.StatusUnauthorized)
 			//return
 			log.Println("Signature Invalid")
 			return false, err
 		}
-		//w.WriteHeader(http.StatusBadRequest)
 		//return
 		return false, err
 	}
