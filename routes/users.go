@@ -119,6 +119,7 @@ func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 
 		var tokenString string
 		var bearerToken string
+		cookie, err := r.Cookie("token")
 
 		// Catchall while I figure out how to use the authorisation header exclusively
 		if r.Header.Get("Authorization") != "" {
@@ -127,23 +128,23 @@ func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 			tokenParts := strings.Split(bearerToken, " ")
 			tokenString = tokenParts[1]
 			log.Println("Token Retrieved From Header...")
-		} else {
+		} else if err != http.ErrNoCookie {
 			// Get the token from the cookie supplied
-			cookie, err := r.Cookie("token")
+			log.Println("Cookie:", cookie)
 			tokenString = cookie.Value
-			//log.Println("Cookie:", bearerToken)
+
 			if err != nil {
-				if err == http.ErrNoCookie {
-					// If the cookie is not set, return an unauthorized status
-					w.WriteHeader(http.StatusUnauthorized)
-					return
-				}
 				// For any other type of error, return a bad request status
 				w.WriteHeader(http.StatusBadRequest)
 				log.Panicln(err)
 				return
 			}
 			log.Println("Token Retrieved From Cookie...")
+		} else {
+			// No token so refuse request
+			log.Panicln("No token...")
+			w.WriteHeader(http.StatusUnauthorized)
+			return
 		}
 
 		if tokenString == "" {
