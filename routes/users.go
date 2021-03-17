@@ -117,17 +117,21 @@ func LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 func AuthenticateJWTMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
+		var tokenString string
 		var bearerToken string
 
 		// Catchall while I figure out how to use the authorisation header exclusively
 		if r.Header.Get("Authorization") != "" {
 			// Get the token from the auth header
-			bearerToken = r.Header.Get("Authorization")
+			bearerToken := r.Header.Get("Authorization")
+			tokenParts := strings.Split(bearerToken, " ")
+			tokenString = tokenParts[1]
 			log.Println("Token Retrieved From Header...")
 		} else {
 			// Get the token from the cookie supplied
-			bearerToken, err := r.Cookie("token")
-			log.Println("Cookie:", bearerToken)
+			cookie, err := r.Cookie("token")
+			tokenString = cookie.Value
+			//log.Println("Cookie:", bearerToken)
 			if err != nil {
 				if err == http.ErrNoCookie {
 					// If the cookie is not set, return an unauthorized status
@@ -136,14 +140,11 @@ func AuthenticateJWTMiddleware(next http.HandlerFunc) http.HandlerFunc {
 				}
 				// For any other type of error, return a bad request status
 				w.WriteHeader(http.StatusBadRequest)
+				log.Panicln(err)
 				return
 			}
 			log.Println("Token Retrieved From Cookie...")
 		}
-
-		// Split the token string into two parts
-		tokenParts := strings.Split(bearerToken, " ")
-		tokenString := tokenParts[1]
 
 		if tokenString == "" {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -157,7 +158,6 @@ func AuthenticateJWTMiddleware(next http.HandlerFunc) http.HandlerFunc {
 		if err == nil && newToken != "" {
 
 			// Set the auth header and cookie to the new JWT token here
-
 			// Sets auth header in the response
 			w.Header().Add("Authorization", bearerToken)
 

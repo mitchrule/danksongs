@@ -90,7 +90,7 @@ func LoginUser(user models.User) (string, error) {
 		return "", err
 	}
 
-	log.Println(claim)
+	//log.Println(claim)
 	log.Println("Inserted: ", insertResult)
 	jwtToken, err := GenerateJWT(claim)
 
@@ -107,12 +107,13 @@ func ValidateUserToken(tknStr string) (string, error) {
 
 	// Initialize a new instance of `Claims`
 	claim := models.Claims{}
+	log.Println(tknStr)
 
 	// Parse the JWT string and store the result in `claims`.
 	// Note that we are passing the key in this method as well. This method will return an error
 	// if the token is invalid (if it has expired according to the expiry time we set on sign in),
 	// or if the signature does not match
-	tkn, err := jwt.ParseWithClaims(tknStr, claim, func(token *jwt.Token) (interface{}, error) {
+	tkn, err := jwt.ParseWithClaims(tknStr, &claim, func(token *jwt.Token) (interface{}, error) {
 		// I dont like that for this to work we have to return our secret key
 		// Will fix if I can
 		return []byte(os.Getenv("SECRET_KEY")), nil
@@ -120,7 +121,7 @@ func ValidateUserToken(tknStr string) (string, error) {
 	log.Println(claim)
 
 	if err != nil {
-		log.Println("Error...")
+		log.Println("Error with jwt signature...")
 		if err == jwt.ErrSignatureInvalid {
 			//return
 			log.Println("Signature Invalid")
@@ -135,10 +136,9 @@ func ValidateUserToken(tknStr string) (string, error) {
 	}
 
 	// Create a new token with the claims gathered from the previous token
-
 	expirationTime := time.Now().Add(SESSION_MINS)
 	claim.ExpiresAt = expirationTime.Unix()
-	jwtToken, err := GenerateJWT(claim)
+	newToken, err := GenerateJWT(claim)
 
 	if err != nil {
 		return "", err
@@ -146,8 +146,8 @@ func ValidateUserToken(tknStr string) (string, error) {
 
 	// Finally, return the welcome message to the user, along with their
 	// username given in the token
-	log.Println("Valid Token, new token: ", jwtToken)
-	return jwtToken, nil
+	log.Println("Valid Token, new token: ", newToken)
+	return newToken, nil
 }
 
 ////////////////////////////////////////////////////////////////////
