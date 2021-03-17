@@ -102,23 +102,18 @@ func LoginUser(user models.User) (string, error) {
 
 // Validate user token checks their JTW token is valid before acessing the API and retured an
 // updated token
-func ValidateUserToken(tknStr string) (string, error) {
+func ValidateUserJWT(tknStr string) (string, error) {
 	// We can obtain the session token from the requests cookies, which come with every request
 
 	// Initialize a new instance of `Claims`
 	claim := models.Claims{}
-	log.Println(tknStr)
 
 	// Parse the JWT string and store the result in `claims`.
-	// Note that we are passing the key in this method as well. This method will return an error
-	// if the token is invalid (if it has expired according to the expiry time we set on sign in),
-	// or if the signature does not match
 	tkn, err := jwt.ParseWithClaims(tknStr, &claim, func(token *jwt.Token) (interface{}, error) {
 		// I dont like that for this to work we have to return our secret key
 		// Will fix if I can
 		return []byte(os.Getenv("SECRET_KEY")), nil
 	})
-	log.Println(claim)
 
 	if err != nil {
 		log.Println("Error with jwt signature...")
@@ -146,7 +141,6 @@ func ValidateUserToken(tknStr string) (string, error) {
 
 	// Finally, return the welcome message to the user, along with their
 	// username given in the token
-	log.Println("Valid Token, new token: ", newToken)
 	return newToken, nil
 }
 

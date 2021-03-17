@@ -20,7 +20,7 @@ func NewRouter() *mux.Router {
 	})
 
 	// See if this works
-	r.HandleFunc("/song", AuthenticateJWTMiddleware(CreateSongHandler)).Methods("POST")
+	r.HandleFunc("/song", AuthMiddleware(CreateSongHandler)).Methods("POST")
 	r.HandleFunc("/user", CreateUserHandler).Methods("POST")
 	r.HandleFunc("/user/login", LoginUserHandler).Methods("POST")
 

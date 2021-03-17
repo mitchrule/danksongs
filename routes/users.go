@@ -114,7 +114,7 @@ func LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // Middleware for JWT authentication
-func AuthenticateJWTMiddleware(next http.HandlerFunc) http.HandlerFunc {
+func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		var tokenString string
@@ -152,7 +152,7 @@ func AuthenticateJWTMiddleware(next http.HandlerFunc) http.HandlerFunc {
 		}
 
 		// Validate the token is from the user specified
-		newToken, err := actions.ValidateUserToken(tokenString)
+		newToken, err := actions.ValidateUserJWT(tokenString)
 
 		// Continue the http request to the api if this succeeds
 		if err == nil && newToken != "" {
