@@ -70,7 +70,7 @@ func LoginUser(user models.User) (string, error) {
 	}
 
 	// Generate the claims for the JWT token for this session
-	expirationTime := time.Now().Add(5 * time.Minute)
+	expirationTime := time.Now().Add(600 * time.Minute)
 
 	// Create a claim based on user info
 	claim := models.Claims{
@@ -88,6 +88,7 @@ func LoginUser(user models.User) (string, error) {
 		return "", err
 	}
 
+	log.Println(claim)
 	log.Println("Inserted: ", insertResult)
 	jwtToken, err := GenerateJWT(claim)
 
@@ -113,7 +114,7 @@ func ValidateUserToken(tknStr string) (bool, error) {
 		// Will fix if I can
 		return []byte(os.Getenv("SECRET_KEY")), nil
 	})
-	log.Panicln(claim)
+	log.Println(claim)
 
 	if err != nil {
 		log.Println("Error...")
@@ -133,6 +134,7 @@ func ValidateUserToken(tknStr string) (bool, error) {
 	// Finally, return the welcome message to the user, along with their
 	// username given in the token
 
+	log.Println("Valid Token...")
 	return true, nil
 
 	//w.Write([]byte(fmt.Sprintf("Welcome %s!", claims.Username)))

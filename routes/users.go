@@ -100,7 +100,8 @@ func LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 
 		bearerToken := "Bearer " + jwtToken
 
-		r.Header.Add("Authorization", bearerToken)
+		//r.Header.Add("Authorization", bearerToken)
+		w.Header().Add("Authorization", bearerToken)
 
 		log.Println("Authorisation token has been set to: ")
 		log.Println(r.Header.Get("authorization"))
@@ -117,7 +118,7 @@ func LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // Middleware for JWT authentication
-func AuthenticateJWTMiddleware(next http.Handler) http.Handler {
+func AuthenticateJWTMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		/* Returive the cookie from the http request
@@ -137,16 +138,17 @@ func AuthenticateJWTMiddleware(next http.Handler) http.Handler {
 		*/
 
 		// Get the token from the auth header
-		tokenString := r.Header.Get("Authorization")
+		bearerToken := r.Header.Get("Authorization")
 
 		// Extract the token from the http cookie
 		//tokenString := c.Value
-		log.Println(tokenString)
+		//log.Println(tokenString)
 
 		// Split the token string into two parts
-		tokenParts := strings.Split(tokenString, " ")
+		tokenParts := strings.Split(bearerToken, " ")
+		tokenString := tokenParts[1]
 
-		log.Panicln("Current Token Parts: ", tokenParts)
+		//log.Println("Current Token Parts: ", tokenParts[0], " and ", tokenParts[1])
 		// #TODO: Use token parts in the action instead of the routes
 
 		if tokenString == "" {
@@ -161,6 +163,7 @@ func AuthenticateJWTMiddleware(next http.Handler) http.Handler {
 		if err == nil && success {
 			next.ServeHTTP(w, r)
 		} else {
+			log.Println(err)
 			http.Error(w, "Forbidden", http.StatusForbidden)
 		}
 	})
