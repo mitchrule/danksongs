@@ -16,6 +16,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+var SESSION_MINS = time.Duration(5) * time.Minute
+
 // CreateUser adds a user to the database
 func CreateUser(user models.User) error {
 	log.Println("Creating user...")
@@ -70,7 +72,7 @@ func LoginUser(user models.User) (string, error) {
 	}
 
 	// Generate the claims for the JWT token for this session
-	expirationTime := time.Now().Add(600 * time.Minute)
+	expirationTime := time.Now().Add(SESSION_MINS)
 
 	// Create a claim based on user info
 	claim := models.Claims{
@@ -98,12 +100,13 @@ func LoginUser(user models.User) (string, error) {
 	return jwtToken, nil
 }
 
-// Validate user token checks their JTW token is valid before acessing the API
-func ValidateUserToken(tknStr string) (bool, error) {
+// Validate user token checks their JTW token is valid before acessing the API and retured an
+// updated token
+func ValidateUserToken(tknStr string) (string, error) {
 	// We can obtain the session token from the requests cookies, which come with every request
 
 	// Initialize a new instance of `Claims`
-	claim := &models.Claims{}
+	claim := models.Claims{}
 
 	// Parse the JWT string and store the result in `claims`.
 	// Note that we are passing the key in this method as well. This method will return an error
@@ -121,28 +124,35 @@ func ValidateUserToken(tknStr string) (bool, error) {
 		if err == jwt.ErrSignatureInvalid {
 			//return
 			log.Println("Signature Invalid")
-			return false, err
+			return "", err
 		}
 		//return
-		return false, err
+		return "", err
 	}
 	if !tkn.Valid {
 		log.Println("Token Invalid")
-		return false, err
+		return "", err
+	}
+
+	// Create a new token with the claims gathered from the previous token
+
+	expirationTime := time.Now().Add(SESSION_MINS)
+	claim.ExpiresAt = expirationTime.Unix()
+	jwtToken, err := GenerateJWT(claim)
+
+	if err != nil {
+		return "", err
 	}
 
 	// Finally, return the welcome message to the user, along with their
 	// username given in the token
-
-	log.Println("Valid Token...")
-	return true, nil
-
-	//w.Write([]byte(fmt.Sprintf("Welcome %s!", claims.Username)))
+	log.Println("Valid Token, new token: ", jwtToken)
+	return jwtToken, nil
 }
 
-///////////////////////////////////////////////////
-/// Helper functions
-///////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
+///////////////////// Helper functions /////////////////////////////
+////////////////////////////////////////////////////////////////////
 
 // getHash generates a hash from a given password string
 func getHash(pwd []byte) string {

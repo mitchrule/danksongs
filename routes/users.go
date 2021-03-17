@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/mitchrule/danksongs/actions"
 	"github.com/mitchrule/danksongs/models"
@@ -95,25 +96,20 @@ func LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err == nil {
-		w.WriteHeader(http.StatusCreated)
-		//w.Write([]byte(`{"token":"` + jwtToken + `"}`))
 
 		bearerToken := "Bearer " + jwtToken
 
-		//r.Header.Add("Authorization", bearerToken)
+		// Sets auth header in the response
 		w.Header().Add("Authorization", bearerToken)
 
-		log.Println("Authorisation token has been set to: ")
-		log.Println(r.Header.Get("authorization"))
+		// Set the JWT token as a cookie in the user browser incase the header is not consistant
+		http.SetCookie(w, &http.Cookie{
+			Name:    "token",
+			Value:   jwtToken,
+			Expires: time.Now().Add(actions.SESSION_MINS),
+		})
 
-		// Set the JWT token as a cookie in the user browser
-		/*
-			http.SetCookie(w, &http.Cookie{
-				Name:    "token",
-				Value:   jwtToken,
-				Expires: expirationTime,
-			})
-		*/
+		w.WriteHeader(http.StatusCreated)
 	}
 }
 
@@ -121,35 +117,33 @@ func LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 func AuthenticateJWTMiddleware(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		/* Returive the cookie from the http request
-		c, err := r.Cookie("token")
+		var bearerToken string
 
-		log.Println("Cookie:", c)
-		if err != nil {
-			if err == http.ErrNoCookie {
-				// If the cookie is not set, return an unauthorized status
-				w.WriteHeader(http.StatusUnauthorized)
+		// Catchall while I figure out how to use the authorisation header exclusively
+		if r.Header.Get("Authorization") != "" {
+			// Get the token from the auth header
+			bearerToken = r.Header.Get("Authorization")
+			log.Println("Token Retrieved From Header...")
+		} else {
+			// Get the token from the cookie supplied
+			bearerToken, err := r.Cookie("token")
+			log.Println("Cookie:", bearerToken)
+			if err != nil {
+				if err == http.ErrNoCookie {
+					// If the cookie is not set, return an unauthorized status
+					w.WriteHeader(http.StatusUnauthorized)
+					return
+				}
+				// For any other type of error, return a bad request status
+				w.WriteHeader(http.StatusBadRequest)
 				return
 			}
-			// For any other type of error, return a bad request status
-			w.WriteHeader(http.StatusBadRequest)
-			return
+			log.Println("Token Retrieved From Cookie...")
 		}
-		*/
-
-		// Get the token from the auth header
-		bearerToken := r.Header.Get("Authorization")
-
-		// Extract the token from the http cookie
-		//tokenString := c.Value
-		//log.Println(tokenString)
 
 		// Split the token string into two parts
 		tokenParts := strings.Split(bearerToken, " ")
 		tokenString := tokenParts[1]
-
-		//log.Println("Current Token Parts: ", tokenParts[0], " and ", tokenParts[1])
-		// #TODO: Use token parts in the action instead of the routes
 
 		if tokenString == "" {
 			w.WriteHeader(http.StatusInternalServerError)
@@ -157,10 +151,23 @@ func AuthenticateJWTMiddleware(next http.HandlerFunc) http.HandlerFunc {
 		}
 
 		// Validate the token is from the user specified
-		success, err := actions.ValidateUserToken(tokenString)
+		newToken, err := actions.ValidateUserToken(tokenString)
 
 		// Continue the http request to the api if this succeeds
-		if err == nil && success {
+		if err == nil && newToken != "" {
+
+			// Set the auth header and cookie to the new JWT token here
+
+			// Sets auth header in the response
+			w.Header().Add("Authorization", bearerToken)
+
+			// Set the JWT token as a cookie in the user browser incase the header is not consistant
+			http.SetCookie(w, &http.Cookie{
+				Name:    "token",
+				Value:   newToken,
+				Expires: time.Now().Add(actions.SESSION_MINS),
+			})
+			log.Println("new token set...")
 			next.ServeHTTP(w, r)
 		} else {
 			log.Println(err)
