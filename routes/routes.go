@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
+	"github.com/mitchrule/danksongs/middleware"
 )
 
 // ErrorResponse should be used for any non-successful response
@@ -20,7 +21,7 @@ func NewRouter() *mux.Router {
 	})
 
 	// See if this works
-	r.HandleFunc("/song", AuthMiddleware(CreateSongHandler)).Methods("POST")
+	r.HandleFunc("/song", middleware.AuthMiddleware(CreateSongHandler)).Methods("POST")
 	r.HandleFunc("/user", CreateUserHandler).Methods("POST")
 	r.HandleFunc("/user/login", LoginUserHandler).Methods("POST")
 
