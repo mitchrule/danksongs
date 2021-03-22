@@ -39,6 +39,8 @@ func CreateSongHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
+	// Placing authentication here for proof of concept
+
 	err = actions.CreateSong(song)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

@@ -16,6 +16,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+var SESSION_MINS = time.Duration(5) * time.Minute
+
 // CreateUser adds a user to the database
 func CreateUser(user models.User) error {
 	log.Println("Creating user...")
@@ -69,18 +71,82 @@ func LoginUser(user models.User) (string, error) {
 		return "", passErr
 	}
 
-	jwtToken, err := GenerateJWT()
+	// Generate the claims for the JWT token for this session
+	expirationTime := time.Now().Add(SESSION_MINS)
+
+	// Create a claim based on user info
+	claim := models.Claims{
+		Username: user.Name,
+		StandardClaims: jwt.StandardClaims{
+			ExpiresAt: expirationTime.Unix(),
+		},
+	}
+
+	// Place in db otherwise
+	insertResult, err := database.UsersCollection.InsertOne(ctx, claim)
+	if err != nil {
+		log.Println("token insert error")
+		log.Println(err)
+		return "", err
+	}
+
+	//log.Println(claim)
+	log.Println("Inserted: ", insertResult)
+	jwtToken, err := GenerateJWT(claim)
+
+	if err != nil {
+		return "", err
+	}
+	return jwtToken, nil
+}
+
+// Validate user token checks their JTW token is valid before acessing the API and retured an
+// updated token
+func ValidateUserJWT(tknStr string) (string, error) {
+	// We can obtain the session token from the requests cookies, which come with every request
+
+	// Initialize a new instance of `Claims`
+	claim := models.Claims{}
+
+	// Parse the JWT string and store the result in `claims`.
+	tkn, err := jwt.ParseWithClaims(tknStr, &claim, func(token *jwt.Token) (interface{}, error) {
+		// I dont like that for this to work we have to return our secret key
+		// Will fix if I can
+		return []byte(os.Getenv("SECRET_KEY")), nil
+	})
+
+	if err != nil {
+		log.Println("Error with jwt signature...")
+		if err == jwt.ErrSignatureInvalid {
+			//return
+			log.Println("Signature Invalid")
+			return "", err
+		}
+		//return
+		return "", err
+	}
+	if !tkn.Valid {
+		log.Println("Token Invalid")
+		return "", err
+	}
+
+	// Create a new token with the claims gathered from the previous token
+	expirationTime := time.Now().Add(SESSION_MINS)
+	claim.ExpiresAt = expirationTime.Unix()
+	newToken, err := GenerateJWT(claim)
 
 	if err != nil {
 		return "", err
 	}
 
-	return jwtToken, nil
+	// Finally, return the welcome message to the user, along with their
+	// username given in the token
+	return newToken, nil
 }
 
-///////////////////////////////////////////////////
-/// Helper functions
-///////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////
+///////////////////// Helper functions /////////////////////////////
+////////////////////////////////////////////////////////////////////
 
 // getHash generates a hash from a given password string
 func getHash(pwd []byte) string {
@@ -92,10 +158,12 @@ func getHash(pwd []byte) string {
 }
 
 // GenerateJWT generates a JWT token for a particuar session
-func GenerateJWT() (string, error) {
+// Delete if other method is better
+
+func GenerateJWT(claim models.Claims) (string, error) {
 
 	secretKey := []byte(os.Getenv("SECRET_KEY"))
-	token := jwt.New(jwt.SigningMethodHS256)
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claim)
 	tokenString, err := token.SignedString(secretKey)
 
 	log.Println(tokenString)
