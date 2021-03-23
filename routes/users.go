@@ -111,3 +111,7 @@ func LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusCreated)
 	}
 }
+
+func LogoutUserHandler(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Hit LogoutUserHandler"))
+}

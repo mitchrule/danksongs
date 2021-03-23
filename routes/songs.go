@@ -49,3 +49,19 @@ func CreateSongHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 
 }
+
+func GetSongHandler(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Hit GetSongHandler"))
+}
+
+func UpdateSongHandler(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Hit UpdateSongHandler"))
+}
+
+func DeleteSongHandler(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Hit DeleteSongHandler"))
+}
+
+func VoteHandler(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Hit VoteHandler"))
+}
