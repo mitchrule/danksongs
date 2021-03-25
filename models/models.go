@@ -12,6 +12,12 @@ type User struct {
 	Password string             `bson:"password"`
 }
 
+type Vote struct {
+	ID   primitive.ObjectID `bson:"id,omitempty"`
+	Name string             `bson:"name,omitempty"`
+	Time primitive.DateTime `bson:"time,omitempty"`
+}
+
 // Claims - for the JWT token verification
 type Claims struct {
 	ID       primitive.ObjectID `bson:"id,omitempty"`
@@ -25,12 +31,13 @@ type Song struct {
 	Title  string             `bson:"title,omitempty"`
 	Artist string             `bson:"artist,omitempty"`
 	URL    string             `bson:"url,omitempty"`
-	Votes  int                `bson:"votes,omitempty"`
+	Votes  []Vote             `bson:"votes,omitempty"`
 }
 
 // Playlist - Models a list of songs to be voted on
 type Playlist struct {
 	ID            primitive.ObjectID   `bson:"id,omitempty"`
+	Name          string               `bson:"string,omitempty"`
 	Songs         []primitive.ObjectID `bson:"songs,omitempty"`
 	VoteThreshold float64              `bson:"votethreshold,omitempty"`
 }

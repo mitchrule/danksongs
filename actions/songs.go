@@ -30,7 +30,7 @@ func newSong(title string, artist string, url string) *models.Song {
 		Title:  title,
 		Artist: artist,
 		URL:    url,
-		Votes:  0,
+		Votes:  []models.Vote{},
 	}
 
 	return &song
