@@ -4,17 +4,16 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/joho/godotenv"
 	"github.com/mitchrule/danksongs/database"
 	"github.com/mitchrule/danksongs/routes"
 )
 
 func main() {
 
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatal(err)
-	}
+	// err := godotenv.Load(".env")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
 
 	database.InitDatabase()
 

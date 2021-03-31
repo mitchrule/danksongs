@@ -1,0 +1,14 @@
+version: "3.4"
+
+services:
+  danksongs:
+    image: danksongs
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - 8080:8080a
+    environment:
+      - MONGOUSERNAME: "${MONGOUSERNAME}"
+      - DATABASENAME: "${DATABASENAME}"
+      - MONGOPWD: "${MONGOPWD}"
