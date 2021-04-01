@@ -20,6 +20,9 @@ var UsersCollection *mongo.Collection = new(mongo.Collection)
 // UsersCollection in MongoDB
 var JWTCollection *mongo.Collection = new(mongo.Collection)
 
+// Playlists
+var PlaylistsCollection *mongo.Collection = new(mongo.Collection)
+
 // InitDatabase initialises a global database client
 func InitDatabase() {
 	mongoUsername := os.Getenv("MONGOUSERNAME")
@@ -38,6 +41,7 @@ func InitDatabase() {
 
 	// Where the collections are initalised
 	SongsCollection = client.Database(databaseName).Collection("songs")
+	PlaylistsCollection = client.Database(databaseName).Collection("playlists")
 	UsersCollection = client.Database(databaseName).Collection("users")
 	JWTCollection = client.Database(databaseName).Collection("tokens")
 
