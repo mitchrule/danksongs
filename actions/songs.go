@@ -7,6 +7,7 @@ import (
 
 	"github.com/mitchrule/danksongs/database"
 	"github.com/mitchrule/danksongs/models"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // CreateSong adds a song to the database
@@ -30,7 +31,7 @@ func newSong(title string, artist string, url string) *models.Song {
 		Title:  title,
 		Artist: artist,
 		URL:    url,
-		Votes:  []models.Vote{},
+		Votes:  make(map[primitive.ObjectID]models.Vote),
 	}
 
 	return &song

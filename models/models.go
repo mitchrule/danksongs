@@ -27,17 +27,17 @@ type Claims struct {
 
 // Song - Models a song
 type Song struct {
-	ID     primitive.ObjectID `bson:"id,omitempty"`
-	Title  string             `bson:"title,omitempty"`
-	Artist string             `bson:"artist,omitempty"`
-	URL    string             `bson:"url,omitempty"`
-	Votes  []Vote             `bson:"votes,omitempty"`
+	ID     primitive.ObjectID          `bson:"id,omitempty"`
+	Title  string                      `bson:"title,omitempty"`
+	Artist string                      `bson:"artist,omitempty"`
+	URL    string                      `bson:"url,omitempty"`
+	Votes  map[primitive.ObjectID]Vote `bson:"votes,omitempty"`
 }
 
 // Playlist - Models a list of songs to be voted on
 type Playlist struct {
-	ID            primitive.ObjectID `bson:"id,omitempty"`
-	Name          string             `bson:"string,omitempty"`
-	Songs         []Song             `bson:"songs,omitempty"`
-	VoteThreshold float64            `bson:"votethreshold,omitempty"`
+	ID            primitive.ObjectID          `bson:"id,omitempty"`
+	Name          string                      `bson:"string,omitempty"`
+	Songs         map[primitive.ObjectID]Song `bson:"songs,omitempty"`
+	VoteThreshold float64                     `bson:"votethreshold,omitempty"`
 }

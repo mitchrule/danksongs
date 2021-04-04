@@ -18,9 +18,11 @@ func CreatePlaylist(playListName string) (*mongo.InsertOneResult, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
+	var songList = make(map[primitive.ObjectID]models.Song)
+
 	newPlaylist := models.Playlist{
 		Name:          playListName,
-		Songs:         nil,
+		Songs:         songList,
 		VoteThreshold: 0,
 	}
 
@@ -75,13 +77,14 @@ func DeletePlaylist(playListID primitive.ObjectID) (bool, error) {
 
 // AddSong will add a song to the Songs section of a playlist by referencing
 // its object id to the playlist and return a true value if successful
+// NOTE: idk if i should use the entire model or just the Id's
 func AddSong(playList models.Playlist, song models.Song) (bool, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	// Add the song to the array
-	playList.Songs = append(playList.Songs, song)
+	// Add the song to the map
+	playList.Songs[song.ID] = song
 
 	// Update playlist
 	var oldPlaylist models.Playlist
@@ -101,20 +104,12 @@ func RemoveSong(playList models.Playlist, song models.Song) (bool, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	// Find Playlist
-	//var playList models.Playlist
-	err := database.PlaylistCollection.FindOne(ctx, bson.M{"_id": playList.ID}).Decode(&playList)
-
-	if err != nil {
-		return false, err
-	}
-
-	// remove the associated object id from the splice
-	playList.Songs = removeSongFromSlice(playList.Songs, song)
+	// remove the associated object id from the map
+	delete(playList.Songs, song.ID)
 
 	// Update playlist
-	var oldPlaylist models.Playlist
-	err = database.PlaylistCollection.FindOneAndUpdate(ctx, bson.M{"_id": playList.ID}, playList).Decode(&oldPlaylist)
+	var newPlaylist models.Playlist
+	err := database.PlaylistCollection.FindOneAndUpdate(ctx, bson.M{"_id": playList.ID}, playList).Decode(&newPlaylist)
 
 	// Return result
 	if err != nil {
@@ -122,24 +117,4 @@ func RemoveSong(playList models.Playlist, song models.Song) (bool, error) {
 	}
 
 	return true, nil
-}
-
-/// Helper functions
-
-// Removes an element from a slice because it isnt built in for no reason
-// Runs in n time which probably wont work for voting
-// TODO: Find a way to do this in <O(n) time
-func removeSongFromSlice(songList []models.Song, songTBR models.Song) []models.Song {
-
-	// Get a Hexadecimal representation of the Objects
-	var newSongList []models.Song
-
-	// for i := 0; i < len(songList); i++ {
-	// 	if (songList[i].ID) != songTBR.ID {
-	// 		append(newSongList, songList[i])
-	// 	}
-	// }
-
-	// Return eveything except that index
-	return newSongList
 }
