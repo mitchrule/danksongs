@@ -1,13 +1,106 @@
 package routes
 
-import "net/http"
+import (
+	"encoding/json"
+	"io/ioutil"
+	"log"
+	"net/http"
+
+	"github.com/mitchrule/danksongs/actions"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+)
 
 func CreatePlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Hit CreatePlaylistHandler"))
+	if r.Header.Values("content-type")[0] != "application/json" {
+		w.WriteHeader(http.StatusBadRequest)
+		res := ErrorResponse{
+			Code:    400,
+			Message: "Incorrect content-type",
+		}
+
+		payload, err := json.Marshal(res)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		// Returns the associated objectID
+		w.Write(payload)
+	}
+
+	var playListName string
+
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+
+	err = json.Unmarshal(body, &playListName)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	playListID, err := actions.CreatePlaylist(playListName)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	playListIDJSON, err := primitive.ObjectID.MarshalJSON(playListID)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	// Returns the newly created playList ObjectID
+	w.Write(playListIDJSON)
+	w.WriteHeader(http.StatusCreated)
+
 }
 
 func GetPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Hit GetPlaylistHandler"))
+
+	if r.Header.Values("content-type")[0] != "application/json" {
+		w.WriteHeader(http.StatusBadRequest)
+		res := ErrorResponse{
+			Code:    400,
+			Message: "Incorrect content-type",
+		}
+
+		payload, err := json.Marshal(res)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		w.Write(payload)
+	}
+
+	var playListID primitive.ObjectID
+
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+
+	err = json.Unmarshal(body, &playListID)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	playList, err := actions.GetPlaylist(playListID)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	playListByte, err := json.Marshal(playList)
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	// Returns the playlist as a JSON
+	w.Write(playListByte)
+	w.WriteHeader(http.StatusCreated)
+
 }
 
 func DeletePlaylistHandler(w http.ResponseWriter, r *http.Request) {

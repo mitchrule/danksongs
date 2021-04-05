@@ -2,18 +2,18 @@ package actions
 
 import (
 	"context"
+	"log"
 	"time"
 
 	"github.com/mitchrule/danksongs/database"
 	"github.com/mitchrule/danksongs/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 // CreatePlaylists creates an empty playlist for songs to be
 // added to and returns the mongo reference if the operaion is sucessful
-func CreatePlaylist(playListName string) (*mongo.InsertOneResult, error) {
+func CreatePlaylist(playListName string) (primitive.ObjectID, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
@@ -32,10 +32,12 @@ func CreatePlaylist(playListName string) (*mongo.InsertOneResult, error) {
 	insertResult, err := database.PlaylistCollection.InsertOne(ctx, newPlaylist)
 
 	if err != nil {
-		return nil, err
+		return primitive.NilObjectID, err
 	}
 
-	return insertResult, nil
+	log.Println(insertResult)
+
+	return insertResult.InsertedID.(primitive.ObjectID), nil
 }
 
 // GetPlaylist should return the playlist specified based on the objectID specified
