@@ -128,28 +128,18 @@ func DeletePlaylistHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 	}
 
-	//primitive.ObjectID.JSON.Unmarshal(body, &playListID)
-
 	err = json.Unmarshal(body, &playListID)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
-	playList, err := actions.GetPlaylist(playListID)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-	}
-
-	playListByte, err := json.Marshal(playList)
-
-	if err != nil {
+	success, err := actions.DeletePlaylist(playListID)
+	if err != nil || !success {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
 	// Returns nothing other than the success statement 
-	w.Write(playListByte)
 	w.WriteHeader(http.StatusCreated)
-
 }
 
 func AddSongHandler(w http.ResponseWriter, r *http.Request) {
@@ -173,6 +163,8 @@ func AddSongHandler(w http.ResponseWriter, r *http.Request) {
 	//var playListID primitive.ObjectID
 	//var songID 	   primitive.ObjectID
 
+
+	//TODO: Fix the form that it can be read from body
 	var ids := {
 		playListID: primitive.ObjectID,
 		songID:		primitive.ObjectID,
