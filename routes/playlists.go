@@ -7,6 +7,7 @@ import (
 	"net/http"
 
 	"github.com/mitchrule/danksongs/actions"
+	"github.com/mitchrule/danksongs/models"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -138,7 +139,7 @@ func DeletePlaylistHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
-	// Returns nothing other than the success statement 
+	// Returns nothing other than the success statement
 	w.WriteHeader(http.StatusCreated)
 }
 
@@ -160,15 +161,7 @@ func AddSongHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write(payload)
 	}
 
-	//var playListID primitive.ObjectID
-	//var songID 	   primitive.ObjectID
-
-
-	//TODO: Fix the form that it can be read from body
-	var ids := {
-		playListID: primitive.ObjectID,
-		songID:		primitive.ObjectID,
-	}
+	var ids models.SongPLPair
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -180,14 +173,13 @@ func AddSongHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
-	//playList, err := actions.GetPlaylist(playListID)
-	success, err := actions.AddSong(ids.playListID,ids.songID)
+	success, err := actions.AddSong(ids)
 
 	if err != nil || !success {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
-	// Returns nothing other than the success statement 
+	// Returns nothing other than the success statement
 	w.WriteHeader(http.StatusCreated)
 }
 
@@ -209,15 +201,12 @@ func RemoveSongHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write(payload)
 	}
 
-	var ids := {
-		playListID: primitive.ObjectID,
-		songID:		primitive.ObjectID,
-	}
-
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 	}
+
+	var ids models.SongPLPair
 
 	err = json.Unmarshal(body, &ids)
 	if err != nil {
@@ -225,12 +214,12 @@ func RemoveSongHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	//playList, err := actions.GetPlaylist(playListID)
-	success, err := actions.RemoveSong(ids.playListID,ids.songID)
+	success, err := actions.RemoveSong(ids)
 
 	if err != nil || !success {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
-	// Returns nothing other than the success statement 
+	// Returns nothing other than the success statement
 	w.WriteHeader(http.StatusCreated)
 }

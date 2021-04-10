@@ -12,10 +12,11 @@ type User struct {
 	Password string             `bson:"password"`
 }
 
+// A Vote With the user assoicated with it
 type Vote struct {
-	ID   primitive.ObjectID `bson:"id,omitempty"`
-	Name string             `bson:"name,omitempty"`
-	Time primitive.DateTime `bson:"time,omitempty"`
+	ID      primitive.ObjectID `bson:"id,omitempty"`
+	VoterID primitive.ObjectID `bson:"name,omitempty"`
+	Time    primitive.DateTime `bson:"time,omitempty"`
 }
 
 // Claims - for the JWT token verification
@@ -40,4 +41,11 @@ type Playlist struct {
 	Name          string                      `bson:"string,omitempty"`
 	Songs         map[primitive.ObjectID]Song `bson:"songs,omitempty"`
 	VoteThreshold float64                     `bson:"votethreshold,omitempty"`
+}
+
+// SongPLPair - A song ID and an associated Playlist ID for Add/Remove Song to work
+// with
+type SongPLPair struct {
+	SongID     primitive.ObjectID `bson:"id,omitempty"`
+	PlaylistID primitive.ObjectID `bson:"id,omitempty"`
 }
