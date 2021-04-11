@@ -37,8 +37,10 @@ type Song struct {
 
 // Playlist - Models a list of songs to be voted on
 type Playlist struct {
-	ID            primitive.ObjectID          `bson:"id,omitempty"`
-	Name          string                      `bson:"string,omitempty"`
+	ID   primitive.ObjectID `bson:"id,omitempty"`
+	Name string             `bson:"string,omitempty"`
+
+	// TODO: Change the model into something that can be returned in a json
 	Songs         map[primitive.ObjectID]Song `bson:"songs,omitempty"`
 	VoteThreshold float64                     `bson:"votethreshold,omitempty"`
 }

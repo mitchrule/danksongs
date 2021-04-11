@@ -12,7 +12,7 @@ import (
 )
 
 func CreatePlaylistHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hit CreatePlaylistHandler"))
+
 	if r.Header.Values("content-type")[0] != "application/json" {
 		w.WriteHeader(http.StatusBadRequest)
 		res := ErrorResponse{
@@ -22,6 +22,7 @@ func CreatePlaylistHandler(w http.ResponseWriter, r *http.Request) {
 
 		payload, err := json.Marshal(res)
 		if err != nil {
+			log.Println("error...")
 			log.Fatal(err)
 		}
 
@@ -33,32 +34,35 @@ func CreatePlaylistHandler(w http.ResponseWriter, r *http.Request) {
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusBadRequest)
 	}
 
 	err = json.Unmarshal(body, &playListName)
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
 	playListID, err := actions.CreatePlaylist(playListName)
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
 	playListIDJSON, err := primitive.ObjectID.MarshalJSON(playListID)
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
 	// Returns the newly created playList ObjectID
-	w.Write(playListIDJSON)
 	w.WriteHeader(http.StatusCreated)
-
+	w.Write(playListIDJSON)
 }
 
 func GetPlaylistHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hit GetPlaylistHandler"))
+	//w.Write([]byte("Hit GetPlaylistHandler"))
 
 	if r.Header.Values("content-type")[0] != "application/json" {
 		w.WriteHeader(http.StatusBadRequest)
@@ -79,22 +83,26 @@ func GetPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusBadRequest)
 	}
 
 	err = json.Unmarshal(body, &playListID)
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
 	playList, err := actions.GetPlaylist(playListID)
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
 	playListByte, err := json.Marshal(playList)
 
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
@@ -105,7 +113,7 @@ func GetPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func DeletePlaylistHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hit DeletePlaylistHandler"))
+	//w.Write([]byte("Hit DeletePlaylistHandler"))
 
 	if r.Header.Values("content-type")[0] != "application/json" {
 		w.WriteHeader(http.StatusBadRequest)
@@ -126,25 +134,28 @@ func DeletePlaylistHandler(w http.ResponseWriter, r *http.Request) {
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusBadRequest)
 	}
 
 	err = json.Unmarshal(body, &playListID)
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
 	success, err := actions.DeletePlaylist(playListID)
 	if err != nil || !success {
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
 	// Returns nothing other than the success statement
-	w.WriteHeader(http.StatusCreated)
+	w.WriteHeader(http.StatusOK)
 }
 
 func AddSongHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hit AddSongHandler"))
+	//w.Write([]byte("Hit AddSongHandler"))
 
 	if r.Header.Values("content-type")[0] != "application/json" {
 		w.WriteHeader(http.StatusBadRequest)
@@ -165,22 +176,25 @@ func AddSongHandler(w http.ResponseWriter, r *http.Request) {
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusBadRequest)
 	}
 
 	err = json.Unmarshal(body, &ids)
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
 	success, err := actions.AddSong(ids)
 
 	if err != nil || !success {
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
 	// Returns nothing other than the success statement
-	w.WriteHeader(http.StatusCreated)
+	w.WriteHeader(http.StatusOK)
 }
 
 func RemoveSongHandler(w http.ResponseWriter, r *http.Request) {
@@ -203,6 +217,7 @@ func RemoveSongHandler(w http.ResponseWriter, r *http.Request) {
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusBadRequest)
 	}
 
@@ -210,6 +225,7 @@ func RemoveSongHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = json.Unmarshal(body, &ids)
 	if err != nil {
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
@@ -217,9 +233,10 @@ func RemoveSongHandler(w http.ResponseWriter, r *http.Request) {
 	success, err := actions.RemoveSong(ids)
 
 	if err != nil || !success {
+		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 
 	// Returns nothing other than the success statement
-	w.WriteHeader(http.StatusCreated)
+	w.WriteHeader(http.StatusOK)
 }
