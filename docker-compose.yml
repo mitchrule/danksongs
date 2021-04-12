@@ -12,3 +12,9 @@ services:
       - MONGOUSERNAME: "${MONGOUSERNAME}"
       - DATABASENAME: "${DATABASENAME}"
       - MONGOPWD: "${MONGOPWD}"
+  mongo:
+    image: "mongo:latest"
+    containter_name: "mongo"
+
+volumes:
+  mongodb_data:
