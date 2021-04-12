@@ -13,5 +13,6 @@ RUN go build -v -o danksongs .
 FROM alpine:latest
 WORKDIR /root
 COPY --from=builder /app/danksongs .
-ENTRYPOINT ./danksongs
-# CMD ["danksongs"]
+EXPOSE 8080
+
+CMD ["./danksongs"]
