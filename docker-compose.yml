@@ -21,13 +21,15 @@ services:
     image: "mongo:latest"
     container_name: "mongo"
     environment:
-      - MONGO_INITDB_ROOT_USERNAME=danksongs
-      - MONGO_INITDB_ROOT_PASSWORD=locked1234
+      - MONGO_INITDB_ROOT_USERNAME="${MONGOUSERNAME}"
+      - MONGO_INITDB_ROOT_PASSWORD="${MONGOPWD}"
     ports:
       - "27017:27017"
     volumes:
       - /data/db
     restart: always
+    logging:
+      driver: "none"
   # MongoDB WebUI
   mongo-express:
     image: mongo-express
@@ -35,10 +37,10 @@ services:
     environment:
       - ME_CONFIG_MONGODB_SERVER=mongo
       - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
-      - ME_CONFIG_MONGODB_ADMINUSERNAME=danksongs
-      - ME_CONFIG_MONGODB_ADMINPASSWORD=locked1234
-      - ME_CONFIG_BASICAUTH_USERNAME=danksongs
-      - ME_CONFIG_BASICAUTH_PASSWORD=locked1234
+      - ME_CONFIG_MONGODB_ADMINUSERNAME="${MONGOUSERNAME}"
+      - ME_CONFIG_MONGODB_ADMINPASSWORD="${MONGOPWD}"
+      - ME_CONFIG_BASICAUTH_USERNAME="${MONGOUSERNAME}"
+      - ME_CONFIG_BASICAUTH_PASSWORD="${MONGOPWD}"
     restart: always
     ports:
       - "8081:8081"

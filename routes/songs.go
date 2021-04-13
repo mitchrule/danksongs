@@ -36,17 +36,35 @@ func CreateSongHandler(w http.ResponseWriter, r *http.Request) {
 
 	err = json.Unmarshal(body, &song)
 	if err != nil {
+		res := ErrorResponse{
+			Code:    http.StatusInternalServerError,
+			Message: "Error Unmarshaling body",
+		}
+
+		payload, err := json.Marshal(res)
+		if err != nil {
+			log.Fatal(err)
+		}
 		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(payload)
 	}
 
 	// Placing authentication here for proof of concept
 
 	err = actions.CreateSong(song)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-	}
+		res := ErrorResponse{
+			Code:    http.StatusInternalServerError,
+			Message: "Error adding song to database",
+		}
 
-	w.WriteHeader(http.StatusCreated)
+		payload, err := json.Marshal(res)
+		if err != nil {
+			log.Fatal(err)
+		}
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write(payload)
+	}
 
 }
 
