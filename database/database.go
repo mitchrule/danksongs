@@ -29,7 +29,8 @@ func InitDatabase() {
 	databaseName := os.Getenv("DATABASENAME")
 	mongoPassword := os.Getenv("MONGOPWD")
 
-	mongoURI := fmt.Sprintf("mongodb+srv://%s:%s@cluster0.sn8oj.mongodb.net/%s?retryWrites=true&w=majority", mongoUsername, mongoPassword, databaseName)
+	// mongoURI := fmt.Sprintf("mongodb+srv://%s:%s@cluster0.sn8oj.mongodb.net/%s?retryWrites=true&w=majority", mongoUsername, mongoPassword, databaseName)
+	mongoURI := fmt.Sprintf("mongodb://%s:%s@mongo:27017/%s?retryWrites=true&w=majority", mongoUsername, mongoPassword, databaseName)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
