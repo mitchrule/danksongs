@@ -55,7 +55,7 @@ func CreateSongHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		res := ErrorResponse{
 			Code:    http.StatusInternalServerError,
-			Message: "Error adding song to database",
+			Message: err.Error(),
 		}
 
 		payload, err := json.Marshal(res)

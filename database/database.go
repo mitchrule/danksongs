@@ -2,9 +2,7 @@ package database
 
 import (
 	"context"
-	"fmt"
 	"log"
-	"os"
 	"time"
 
 	"go.mongodb.org/mongo-driver/mongo"
@@ -25,12 +23,14 @@ var PlaylistsCollection *mongo.Collection = new(mongo.Collection)
 
 // InitDatabase initialises a global database client
 func InitDatabase() {
-	mongoUsername := os.Getenv("MONGOUSERNAME")
-	databaseName := os.Getenv("DATABASENAME")
-	mongoPassword := os.Getenv("MONGOPWD")
+	// mongoUsername := os.Getenv("MONGOUSERNAME")
+	databaseName := "danksongs"
+	// mongoPassword := os.Getenv("MONGOPWD")
+	// mongoURI := os.Getenv("MONGO_URI")
+	mongoURI := "mongodb://mongo:27017"
 
 	// mongoURI := fmt.Sprintf("mongodb+srv://%s:%s@cluster0.sn8oj.mongodb.net/%s?retryWrites=true&w=majority", mongoUsername, mongoPassword, databaseName)
-	mongoURI := fmt.Sprintf("mongodb://%s:%s@mongo:27017/%s?retryWrites=true&w=majority", mongoUsername, mongoPassword, databaseName)
+	// mongoURI := fmt.Sprintf("mongodb://%s:%s@mongo:27017/%s?retryWrites=true&w=majority", mongoUsername, mongoPassword, databaseName)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
