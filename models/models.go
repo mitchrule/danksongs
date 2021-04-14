@@ -28,11 +28,11 @@ type Claims struct {
 
 // Song - Models a song
 type Song struct {
-	ID     primitive.ObjectID          `bson:"id,omitempty"`
-	Title  string                      `bson:"title,omitempty"`
-	Artist string                      `bson:"artist,omitempty"`
-	URL    string                      `bson:"url,omitempty"`
-	Votes  map[primitive.ObjectID]Vote `bson:"votes,omitempty"`
+	ID     primitive.ObjectID `bson:"id,omitempty"`
+	Title  string             `bson:"title,omitempty"`
+	Artist string             `bson:"artist,omitempty"`
+	URL    string             `bson:"url,omitempty"`
+	Votes  []Vote             `bson:"votes,omitempty"`
 }
 
 // Playlist - Models a list of songs to be voted on
@@ -41,8 +41,8 @@ type Playlist struct {
 	Name string             `bson:"string,omitempty"`
 
 	// TODO: Change the model into something that can be returned in a json
-	Songs         map[primitive.ObjectID]Song `bson:"songs,omitempty"`
-	VoteThreshold float64                     `bson:"votethreshold,omitempty"`
+	Songs         []Song  `bson:"songs,omitempty"`
+	VoteThreshold float64 `bson:"votethreshold,omitempty"`
 }
 
 // SongPLPair - A song ID and an associated Playlist ID for Add/Remove Song to work

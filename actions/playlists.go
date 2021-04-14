@@ -18,11 +18,9 @@ func CreatePlaylist(playListName string) (primitive.ObjectID, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	var songList = make(map[primitive.ObjectID]models.Song)
-
 	newPlaylist := models.Playlist{
 		Name:          playListName,
-		Songs:         songList,
+		Songs:         []models.Song{},
 		VoteThreshold: 0,
 	}
 
@@ -103,8 +101,9 @@ func AddSong(ids models.SongPLPair) (bool, error) {
 		return false, err
 	}
 
-	// Add the song to the map
-	playList.Songs[song.ID] = song
+	// Add the song to the slice
+	newSongs := append(playList.Songs, song)
+	playList.Songs = newSongs
 
 	// Update playlist
 	var newPlaylist models.Playlist
@@ -142,8 +141,17 @@ func RemoveSong(ids models.SongPLPair) (bool, error) {
 		return false, err
 	}
 
+	var newSongs []models.Song
+
 	// remove the associated object id from the map
-	delete(playList.Songs, song.ID)
+	for _, song := range playList.Songs {
+		if song.ID != ids.SongID {
+			newSongs = append(newSongs, song)
+		}
+	}
+
+	// Assign the new song list
+	playList.Songs = newSongs
 
 	// Update playlist
 	var newPlaylist models.Playlist
