@@ -9,12 +9,6 @@ import (
 )
 
 func main() {
-
-	// err := godotenv.Load(".env")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// }
-
 	database.InitDatabase()
 
 	router := routes.NewRouter()
@@ -25,5 +19,4 @@ func main() {
 	}
 	log.Println("Listening on 8080...")
 	s.ListenAndServe()
-
 }
