@@ -4,18 +4,11 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/joho/godotenv"
 	"github.com/mitchrule/danksongs/database"
 	"github.com/mitchrule/danksongs/routes"
 )
 
 func main() {
-
-	err := godotenv.Load(".env")
-	if err != nil {
-		log.Fatal(err)
-	}
-
 	database.InitDatabase()
 
 	router := routes.NewRouter()
@@ -26,5 +19,4 @@ func main() {
 	}
 	log.Println("Listening on 8080...")
 	s.ListenAndServe()
-
 }
