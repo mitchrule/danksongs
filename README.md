@@ -7,6 +7,8 @@ Once you have Docker installed, Danksongs can be built by running `docker-compos
 
 To run again without having to rebuild, use `docker-compose up`
 
+Shutdown the containers with `docker-compose down`
+
 ## Access
 
 Once the Docker container is running, the containers can be accessed as follows:
