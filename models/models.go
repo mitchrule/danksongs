@@ -31,6 +31,7 @@ type Song struct {
 // Playlist - Models a list of songs to be voted on
 type Playlist struct {
 	ID            primitive.ObjectID   `bson:"id,omitempty"`
+	Title         string               `bson:"title, omitempty"`
 	Songs         []primitive.ObjectID `bson:"songs,omitempty"`
 	VoteThreshold float64              `bson:"votethreshold,omitempty"`
 }

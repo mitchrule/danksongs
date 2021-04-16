@@ -22,7 +22,7 @@ func NewRouter() *mux.Router {
 
 	// See if this works
 	// Song routes
-	r.HandleFunc("/api/song", middleware.AuthMiddleware(CreateSongHandler)).Methods("POST")
+	r.HandleFunc("/api/song", CreateSongHandler).Methods("POST")
 	r.HandleFunc("/api/song", GetSongHandler).Methods("GET")
 	r.HandleFunc("/api/song", middleware.AuthMiddleware(UpdateSongHandler)).Methods("PUT")
 	r.HandleFunc("/api/song", middleware.AuthMiddleware(DeleteSongHandler)).Methods("DELETE")

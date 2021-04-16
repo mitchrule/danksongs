@@ -134,6 +134,9 @@ dist
 .vscode-test
 .vscode
 
+# MongoDB container volume
+/mongodata
+
 ### react ###
 .DS_*
 **/*.backup.*
