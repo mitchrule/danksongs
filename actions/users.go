@@ -15,7 +15,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-var SESSION_MINS = time.Duration(5) * time.Minute
+// The length of time a cookie lasts before it expires
+var SESSION_MINS = time.Duration(30) * time.Minute
 
 // CreateUser adds a user to the database
 func CreateUser(user models.User) error {
