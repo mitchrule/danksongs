@@ -21,7 +21,7 @@
       "mountPoints": [
         {
           "containerPath": "/data/db",
-          "sourceVolume": "_Mongodata"
+          "sourceVolume": "Mongodata"
         }
       ],
       "name": "mongo",
@@ -62,9 +62,9 @@
   "volumes": [
     {
       "host": {
-        "sourcePath": "./mongodata"
+        "sourcePath": "mongodata"
       },
-      "name": "_Mongodata"
+      "name": "Mongodata"
     }
   ]
 }

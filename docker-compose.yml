@@ -21,7 +21,7 @@ services:
     ports:
       - "27017:27017"
     volumes:
-      - ./mongodata:/data/db
+      - mongodata:/data/db
     restart: always
     mem_limit: 256m
     # logging:
@@ -52,3 +52,6 @@ services:
     links:
       - api
     mem_limit: 128m
+
+volumes:
+  mongodata:
