@@ -25,7 +25,7 @@ type Song struct {
 	Title  string             `bson:"title,omitempty"`
 	Artist string             `bson:"artist,omitempty"`
 	URL    string             `bson:"url,omitempty"`
-	Votes  int                `bson:"votes,omitempty"`
+	Votes  []Vote             `bson:"votes,omitempty"`
 }
 
 // Playlist - Models a list of songs to be voted on
@@ -34,4 +34,10 @@ type Playlist struct {
 	Title         string               `bson:"title, omitempty"`
 	Songs         []primitive.ObjectID `bson:"songs,omitempty"`
 	VoteThreshold float64              `bson:"votethreshold,omitempty"`
+}
+
+// Vote - Models a vote on a song by a user
+type Vote struct {
+	ID   primitive.ObjectID `bson:"id"`
+	User User               `bson:"user"`
 }

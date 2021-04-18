@@ -149,3 +149,8 @@ node_modules
 psd
 thumb
 sketch
+
+# Elastic Beanstalk Files
+.elasticbeanstalk/*
+!.elasticbeanstalk/*.cfg.yml
+!.elasticbeanstalk/*.global.yml

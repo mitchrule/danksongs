@@ -4,14 +4,15 @@ services:
   # Backend golang server
   api:
     build:
-      context: .
-      dockerfile: ./Dockerfile
+      context: ./backend
+    image: mitchrule/danksongs-api
     container_name: danksongs-api
     ports:
       - "8080:8080"
     restart: always
     links:
       - mongo
+    mem_limit: 256m
 
   # MongoDB database
   mongo:
@@ -22,8 +23,9 @@ services:
     volumes:
       - ./mongodata:/data/db
     restart: always
-    logging:
-      driver: "none"
+    mem_limit: 256m
+    # logging:
+    # driver: "none"
 
   # MongoDB WebUI
   mongo-express:
@@ -34,15 +36,19 @@ services:
       - "8081:8081"
     depends_on:
       - mongo
-    logging:
-      driver: "none"
+    mem_limit: 256m
+    # logging:
+    # driver: "none"
 
   # React frontend
   ui:
-    build: ./ui
+    build:
+      context: ./ui
+    image: mitchrule/danksongs-ui
     container_name: danksongs-ui
     ports:
-      - "3000:3000"
+      - "80~`:3000"
     restart: always
     links:
       - api
+    mem_limit: 256m

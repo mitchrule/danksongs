@@ -1,8 +1,8 @@
 FROM node
 
-RUN mkdir /app
-ADD . /app
-WORKDIR /app
+RUN mkdir /application
+ADD . /application
+WORKDIR /application
 RUN npm install
 EXPOSE 3000
 CMD ["npm", "start"]
