@@ -5,7 +5,7 @@
       "essential": true,
       "image": "mitchrule/danksongs-api",
       "links": ["mongo"],
-      "memory": 128,
+      "memory": 256,
       "name": "api",
       "portMappings": [
         {
@@ -34,21 +34,9 @@
     },
     {
       "essential": true,
-      "image": "mongo-express",
-      "memory": 128,
-      "name": "mongo-express",
-      "portMappings": [
-        {
-          "containerPort": 8081,
-          "hostPort": 8081
-        }
-      ]
-    },
-    {
-      "essential": true,
       "image": "mitchrule/danksongs-ui",
       "links": ["api"],
-      "memory": 128,
+      "memory": 256,
       "name": "ui",
       "portMappings": [
         {

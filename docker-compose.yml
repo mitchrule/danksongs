@@ -12,7 +12,7 @@ services:
     restart: always
     links:
       - mongo
-    mem_limit: 128m
+    mem_limit: 256m
 
   # MongoDB database
   mongo:
@@ -27,18 +27,18 @@ services:
     # logging:
     # driver: "none"
 
-  # MongoDB WebUI
-  mongo-express:
-    image: mongo-express
-    container_name: "mongo-express"
-    restart: always
-    ports:
-      - "8081:8081"
-    depends_on:
-      - mongo
-    mem_limit: 128m
-    # logging:
-    # driver: "none"
+  # # MongoDB WebUI
+  # mongo-express:
+  #   image: mongo-express
+  #   container_name: "mongo-express"
+  #   restart: always
+  #   ports:
+  #     - "8081:8081"
+  #   depends_on:
+  #     - mongo
+  #   mem_limit: 128m
+  # logging:
+  # driver: "none"
 
   # React frontend
   ui:
@@ -51,7 +51,7 @@ services:
     restart: always
     links:
       - api
-    mem_limit: 128m
+    mem_limit: 256m
 
 volumes:
   mongodata:
