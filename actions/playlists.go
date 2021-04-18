@@ -9,6 +9,7 @@ import (
 	"github.com/mitchrule/danksongs/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 // CreatePlaylists creates an empty playlist for songs to be
@@ -94,7 +95,7 @@ func AddSong(ids models.SongPLPair) (bool, error) {
 		return false, err
 	}
 
-	err = database.PlaylistCollection.FindOne(ctx, bson.M{"_id": ids.SongID}).Decode(&song)
+	err = database.SongsCollection.FindOne(ctx, bson.M{"_id": ids.SongID}).Decode(&song)
 
 	// Error Check
 	if err != nil {
@@ -105,9 +106,12 @@ func AddSong(ids models.SongPLPair) (bool, error) {
 	newSongs := append(playList.Songs, song)
 	playList.Songs = newSongs
 
+	log.Println("Current New Playlist")
+	log.Println(playList)
+
 	// Update playlist
-	var newPlaylist models.Playlist
-	err = database.PlaylistCollection.FindOneAndUpdate(ctx, bson.M{"_id": playList.ID}, playList).Decode(&newPlaylist)
+	var oldPlaylist models.Playlist
+	err = database.PlaylistCollection.FindOneAndReplace(ctx, bson.M{"_id": playList.ID}, playList).Decode(&oldPlaylist)
 
 	// Return result
 	if err != nil {
@@ -134,7 +138,7 @@ func RemoveSong(ids models.SongPLPair) (bool, error) {
 		return false, err
 	}
 
-	err = database.PlaylistCollection.FindOne(ctx, bson.M{"_id": ids.SongID}).Decode(&song)
+	err = database.SongsCollection.FindOne(ctx, bson.M{"_id": ids.SongID}).Decode(&song)
 
 	// Error Check
 	if err != nil {
@@ -144,18 +148,25 @@ func RemoveSong(ids models.SongPLPair) (bool, error) {
 	var newSongs []models.Song
 
 	// remove the associated object id from the map
+	found := false
+
 	for _, song := range playList.Songs {
-		if song.ID != ids.SongID {
+		if song.ID != ids.SongID && !found {
 			newSongs = append(newSongs, song)
+			found = true
 		}
+	}
+
+	if !found {
+		return false, mongo.ErrNoDocuments
 	}
 
 	// Assign the new song list
 	playList.Songs = newSongs
 
 	// Update playlist
-	var newPlaylist models.Playlist
-	err = database.PlaylistCollection.FindOneAndUpdate(ctx, bson.M{"_id": playList.ID}, playList).Decode(&newPlaylist)
+	var oldPlaylist models.Playlist
+	err = database.PlaylistCollection.FindOneAndReplace(ctx, bson.M{"_id": playList.ID}, playList).Decode(&oldPlaylist)
 
 	// Error Check
 	if err != nil {
