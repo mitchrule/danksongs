@@ -1,58 +1,69 @@
 {
-  "AWSEBDockerrunVersion": "2",
-  "volumes": [
-    {
-      "name": "mongodata",
-      "host": {
-        "sourcePath": "/var/app/current"
-      }
-    }
-  ],
   "containerDefinitions": [
     {
-      "name": "api",
+      "essential": true,
       "image": "mitchrule/danksongs-api",
-      "essential": true,
+      "links": ["mongo"],
       "memory": 256,
+      "name": "api",
       "portMappings": [
         {
-          "hostPort": 8080,
-          "containerPort": 8080
-        }
-      ],
-      "links": ["mongo"]
-    },
-    {
-      "name": "mongo",
-      "image": "mongo:latest",
-      "essential": true,
-      "memory": 512,
-      "portMappings": [
-        {
-          "hostPort": 27017,
-          "containerPort": 27017
-        }
-      ],
-      "mountPoints": [
-        {
-          "sourceVolume": "mongodata",
-          "containerPath": "/data/db",
-          "readOnly": false
+          "containerPort": 8080,
+          "hostPort": 8080
         }
       ]
     },
     {
-      "name": "ui",
-      "image": "mitchrule/danksongs-ui",
       "essential": true,
+      "image": "mongo:latest",
       "memory": 256,
-      "portMappings": [
+      "mountPoints": [
         {
-          "hostPort": 80,
-          "containerPort": 3000
+          "containerPath": "/data/db",
+          "sourceVolume": "_Mongodata"
         }
       ],
-      "links": ["api"]
+      "name": "mongo",
+      "portMappings": [
+        {
+          "containerPort": 27017,
+          "hostPort": 27017
+        }
+      ]
+    },
+    {
+      "essential": true,
+      "image": "mongo-express",
+      "memory": 256,
+      "name": "mongo-express",
+      "portMappings": [
+        {
+          "containerPort": 8081,
+          "hostPort": 8081
+        }
+      ]
+    },
+    {
+      "essential": true,
+      "image": "mitchrule/danksongs-ui",
+      "links": ["api"],
+      "memory": 256,
+      "name": "ui",
+      "portMappings": [
+        {
+          "containerPort": 3000,
+          "hostPort": 80
+        }
+      ]
+    }
+  ],
+  "family": "",
+  "volumes": [
+    {
+      "host": {
+        "sourcePath": "./mongodata"
+      },
+      "name": "_Mongodata"
     }
   ]
 }
