@@ -12,69 +12,7 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-// CreatePlaylists creates an empty playlist for songs to be
-// added to and returns the mongo reference if the operaion is sucessful
-func CreatePlaylist(playListName string) (primitive.ObjectID, error) {
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	newPlaylist := models.Playlist{
-		Name:          playListName,
-		Songs:         []models.Song{},
-		VoteThreshold: 0,
-	}
-
-	// TODO
-	// Check for duplicates
-
-	insertResult, err := database.PlaylistCollection.InsertOne(ctx, newPlaylist)
-
-	if err != nil {
-		return primitive.NilObjectID, err
-	}
-
-	log.Println(insertResult)
-
-	return insertResult.InsertedID.(primitive.ObjectID), nil
-}
-
-// GetPlaylist should return the playlist specified based on the objectID specified
-func GetPlaylist(playListID primitive.ObjectID) (models.Playlist, error) {
-
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	// Check mongoDB for the associated objectID
-	var playList models.Playlist
-	err := database.PlaylistCollection.FindOne(ctx, bson.M{"_id": playListID}).Decode(&playList)
-
-	if err != nil {
-		return models.Playlist{}, err
-	} else {
-		//return the playlist
-		return playList, nil
-	}
-}
-
-// GetPlaylist should delete the playlist specified and return a true falue
-// if it suceeds and an error otherwise
-func DeletePlaylist(playListID primitive.ObjectID) (bool, error) {
-
-	// Look up the object Id
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-
-	// Check mongoDB for the associated objectID
-	var deletedPlaylist models.Playlist
-	err := database.PlaylistCollection.FindOneAndDelete(ctx, bson.M{"_id": playListID}).Decode(&deletedPlaylist)
-
-	if err != nil {
-		return false, err
-	} else {
-		return true, nil
-	}
-}
+const NUM_SONGS_RETURNED = 25;
 
 // AddSong will add a song to the Songs section of a playlist by referencing
 // its object id to the playlist and return a true value if successful
@@ -119,6 +57,78 @@ func AddSong(ids models.SongPLPair) (bool, error) {
 	}
 
 	return true, nil
+}
+
+// CreatePlaylists creates an empty playlist for songs to be
+// added to and returns the mongo reference if the operaion is sucessful
+func CreatePlaylist(playListName string) (primitive.ObjectID, error) {
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	newPlaylist := models.Playlist{
+		Name:          playListName,
+		Songs:         []models.Song{},
+		VoteThreshold: 0,
+	}
+
+	// TODO
+	// 1. Check for duplicates
+	// 2. Add min votes required field
+	// 3. Set threshold 
+
+	insertResult, err := database.PlaylistCollection.InsertOne(ctx, newPlaylist)
+
+	if err != nil {
+		return primitive.NilObjectID, err
+	}
+
+	log.Println(insertResult)
+
+	return insertResult.InsertedID.(primitive.ObjectID), nil
+}
+
+// GetPlaylist should delete the playlist specified and return a true falue
+// if it suceeds and an error otherwise
+func DeletePlaylist(playListID primitive.ObjectID) (bool, error) {
+
+	// Look up the object Id
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// Check mongoDB for the associated objectID
+	var deletedPlaylist models.Playlist
+	err := database.PlaylistCollection.FindOneAndDelete(ctx, bson.M{"_id": playListID}).Decode(&deletedPlaylist)
+
+	if err != nil {
+		return false, err
+	} else {
+		return true, nil
+	}
+}
+
+// GetRecentPlaylists returns the most recent playlists based on how recently they
+// were created
+func GetRecentPlaylists(userID primitive.ObjectID) ([models.Playlist], error) {
+	return false, nil
+}	
+
+// GetPlaylist should return the playlist specified based on the objectID specified
+func GetPlaylist(playListID primitive.ObjectID) (models.Playlist, error) {
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// Check mongoDB for the associated objectID
+	var playList models.Playlist
+	err := database.PlaylistCollection.FindOne(ctx, bson.M{"_id": playListID}).Decode(&playList)
+
+	if err != nil {
+		return models.Playlist{}, err
+	} else {
+		//return the playlist
+		return playList, nil
+	}
 }
 
 // RemoveSong will remove a song from a playlist based on its object id and
@@ -174,4 +184,10 @@ func RemoveSong(ids models.SongPLPair) (bool, error) {
 	}
 
 	return true, nil
+}
+
+// SearchPlaylists will return the playlists that are most alike to
+// the search term imputted by the user
+func SearchPlaylists (query string) ([models.Playlist], error) {
+	return false, nil
 }
