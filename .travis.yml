@@ -5,7 +5,7 @@ services:
 
 before_script: pip install docker-compose
 
-script: if [[ "$TRAVIS_BRANCH" == "mitch/deploy" ]]; then
+script: if [[ "$TRAVIS_BRANCH" == "main" ]]; then
   docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD ;
   docker-compose build ;
   docker tag api $DOCKER_USERNAME/danksongs-api:latest ;
