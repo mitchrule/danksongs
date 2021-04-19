@@ -32,13 +32,13 @@ func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 			if err != nil {
 				// For any other type of error, return a bad request status
 				w.WriteHeader(http.StatusBadRequest)
-				log.Panicln(err)
+				log.Println(err)
 				return
 			}
 			log.Println("Token Retrieved From Cookie...")
 		} else {
 			// No token so refuse request
-			log.Panicln("No token...")
+			log.Println("No token...")
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}

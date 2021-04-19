@@ -26,12 +26,11 @@ func CreateSong(song models.Song) error {
 
 // NewSong returns a pointer to a song with 0 votes
 func newSong(title string, artist string, url string) *models.Song {
-	votes := []models.Vote{}
 	song := models.Song{
 		Title:  title,
 		Artist: artist,
 		URL:    url,
-		Votes:  votes,
+		Votes:  []models.Vote{},
 	}
 
 	return &song

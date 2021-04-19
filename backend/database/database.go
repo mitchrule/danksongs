@@ -9,6 +9,14 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+// Might not be required if we can create the vote inside the
+// song
+// VotesCollection in MongoDB
+//var VotesCollection *mongo.Collection = new(mongo.Collection)
+
+// PlaylistCollection in MongoDB
+var PlaylistCollection *mongo.Collection = new(mongo.Collection)
+
 // SongsCollection in MongoDB
 var SongsCollection *mongo.Collection = new(mongo.Collection)
 
@@ -41,6 +49,7 @@ func InitDatabase() {
 	// defer client.Disconnect(ctx)
 
 	// Where the collections are initalised
+	PlaylistCollection = client.Database(databaseName).Collection("playlists")
 	SongsCollection = client.Database(databaseName).Collection("songs")
 	PlaylistsCollection = client.Database(databaseName).Collection("playlists")
 	UsersCollection = client.Database(databaseName).Collection("users")
