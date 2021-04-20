@@ -41,13 +41,23 @@ type Playlist struct {
 	Name string             `bson:"string,omitempty"`
 
 	// TODO: Change the model into something that can be returned in a json
-	Songs         []Song  `bson:"songs,omitempty"`
-	VoteThreshold float64 `bson:"votethreshold,omitempty"`
+	Songs          []Song  `bson:"songs,omitempty"`
+	VoteThreshold  uint16  `bson:"votethreshold,omitempty"`
+	VotePreportion float64 `bson:"votepreportion,omitempty"`
+}
+
+// Structs used to capture data from requests
+
+// PlaylistData - Captures data for create playlist
+type PlaylistData struct {
+	PlayListName   string
+	VoteThreshold  uint16
+	VotePreportion float64
 }
 
 // SongPLPair - A song ID and an associated Playlist ID for Add/Remove Song to work
 // with
 type SongPLPair struct {
-	SongID     primitive.ObjectID `bson:"_id,omitempty"`
-	PlaylistID primitive.ObjectID `bson:"_id,omitempty"`
+	SongID     primitive.ObjectID
+	PlaylistID primitive.ObjectID
 }

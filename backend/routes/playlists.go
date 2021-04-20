@@ -33,11 +33,7 @@ func CreatePlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Changed it to a json
-	var playListData := {
-		playListName: string,
-		voteThreshold: int,
-		votePreportion int,
-	}
+	var playListData models.PlaylistData
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {

@@ -62,7 +62,11 @@ func AddSong(ids models.SongPLPair) (bool, error) {
 
 // CreatePlaylists creates an empty playlist for songs to be
 // added to and returns the mongo reference if the operaion is sucessful
-func CreatePlaylist(playListName string, voteThreshold int, votePreportion int) (primitive.ObjectID, error) {
+func CreatePlaylist(data models.PlaylistData) (primitive.ObjectID, error) {
+
+	playListName := data.PlayListName
+	voteThreshold := data.VoteThreshold
+	votePreportion := data.VotePreportion
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
