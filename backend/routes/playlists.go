@@ -32,7 +32,12 @@ func CreatePlaylistHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var playListName string
+	// Changed it to a json
+	var playListData := {
+		playListName: string,
+		voteThreshold: int,
+		votePreportion int,
+	}
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -41,14 +46,14 @@ func CreatePlaylistHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = json.Unmarshal(body, &playListName)
+	err = json.Unmarshal(body, &playListData)
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
-	playListID, err := actions.CreatePlaylist(playListName)
+	playListID, err := actions.CreatePlaylist(playListData)
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
