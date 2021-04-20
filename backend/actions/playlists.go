@@ -10,9 +10,10 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-const NUM_SONGS_RETURNED = 25;
+const NUM_PLAYLISTS_RETURNED = 30
 
 // AddSong will add a song to the Songs section of a playlist by referencing
 // its object id to the playlist and return a true value if successful
@@ -75,7 +76,7 @@ func CreatePlaylist(playListName string) (primitive.ObjectID, error) {
 	// TODO
 	// 1. Check for duplicates
 	// 2. Add min votes required field
-	// 3. Set threshold 
+	// 3. Set threshold
 
 	insertResult, err := database.PlaylistCollection.InsertOne(ctx, newPlaylist)
 
@@ -108,10 +109,30 @@ func DeletePlaylist(playListID primitive.ObjectID) (bool, error) {
 }
 
 // GetRecentPlaylists returns the most recent playlists based on how recently they
-// were created
-func GetRecentPlaylists(userID primitive.ObjectID) ([models.Playlist], error) {
-	return false, nil
-}	
+// were created. Currently set to get playlists from the last month.
+func GetRecentPlaylists() ([]models.Playlist, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var playLists []models.Playlist
+
+	// Sort the object ids as they are produced in an order
+	// TODO: Check this
+	opts := options.Find().SetSort(bson.D{{"_id", 1}})
+
+	// Sort for most recent
+	cursor, err := database.PlaylistCollection.Find(ctx, bson.D{}, opts)
+
+	// Return them in an array
+	err = cursor.All(context.TODO(), &playLists)
+
+	// Return the result
+	if err != nil {
+		return nil, err
+	} else {
+		return playLists[:NUM_PLAYLISTS_RETURNED], nil
+	}
+}
 
 // GetPlaylist should return the playlist specified based on the objectID specified
 func GetPlaylist(playListID primitive.ObjectID) (models.Playlist, error) {
@@ -188,6 +209,6 @@ func RemoveSong(ids models.SongPLPair) (bool, error) {
 
 // SearchPlaylists will return the playlists that are most alike to
 // the search term imputted by the user
-func SearchPlaylists (query string) ([models.Playlist], error) {
-	return false, nil
+func SearchPlaylists(query string) ([]models.Playlist, error) {
+	return nil, nil
 }
