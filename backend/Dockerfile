@@ -1,11 +1,13 @@
+FROM node
+
+RUN mkdir /application
+ADD . /application
+
+WORKDIR /application
+
+RUN cd ../ui && npm install
+
 FROM golang:alpine AS builder
-
-# Move all files into /app
-RUN mkdir /app
-ADD . /app
-
-WORKDIR /app
-
 RUN go mod download
 
 RUN go build -v -o danksongs .
