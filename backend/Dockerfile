@@ -14,7 +14,7 @@ RUN go build -v -o danksongs .
 
 FROM alpine:latest
 WORKDIR /root
-COPY --from=builder /app/danksongs .
+COPY --from=builder /application/danksongs .
 EXPOSE 8080
 
 CMD ["./danksongs"]

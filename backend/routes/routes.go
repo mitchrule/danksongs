@@ -40,7 +40,7 @@ func (h spaHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(path)
 
 	// prepend the path with the path to the static directory
-	path = filepath.Join(h.staticPath, path)
+	path = filepath.Join(h.staticPath, r.URL.Path)
 	fmt.Println(path)
 
 	// check whether a file exists at the given path
@@ -86,8 +86,11 @@ func NewRouter() *mux.Router {
 	r.HandleFunc("/api/user/logout", middleware.AuthMiddleware(LogoutUserHandler)).Methods("POST")
 
 	// Serve the static React app
-	spa := spaHandler{staticPath: "../ui/build", indexPath: "index.html"}
+	spa := spaHandler{staticPath: "ui/build/", indexPath: "index.html"}
 	r.PathPrefix("/").Handler(spa)
+	// r.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	// 	http.ServeFile(w, r, "../ui/build/index.html")
+	// })
 
 	return r
 }
