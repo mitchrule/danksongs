@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -36,8 +37,11 @@ func (h spaHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	fmt.Println(path)
+
 	// prepend the path with the path to the static directory
 	path = filepath.Join(h.staticPath, path)
+	fmt.Println(path)
 
 	// check whether a file exists at the given path
 	_, err = os.Stat(path)
@@ -82,7 +86,7 @@ func NewRouter() *mux.Router {
 	r.HandleFunc("/api/user/logout", middleware.AuthMiddleware(LogoutUserHandler)).Methods("POST")
 
 	// Serve the static React app
-	spa := spaHandler{staticPath: "../ui/build", indexPath: "../ui/build/index.html"}
+	spa := spaHandler{staticPath: "../ui/build", indexPath: "index.html"}
 	r.PathPrefix("/").Handler(spa)
 
 	return r

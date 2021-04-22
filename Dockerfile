@@ -19,4 +19,4 @@ COPY --from=gobuild /application .
 EXPOSE 8080
 
 # CMD [ "pwd" ]
-# CMD ["./backend/danksongs"]
+CMD ["./backend/danksongs"]
