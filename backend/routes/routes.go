@@ -88,9 +88,6 @@ func NewRouter() *mux.Router {
 	// Serve the static React app
 	spa := spaHandler{staticPath: "ui/build/", indexPath: "index.html"}
 	r.PathPrefix("/").Handler(spa)
-	// r.PathPrefix("/").HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-	// 	http.ServeFile(w, r, "../ui/build/index.html")
-	// })
 
 	return r
 }
