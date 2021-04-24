@@ -128,6 +128,13 @@ func GetPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// TODO
+func GetRecentPlaylistsHandler(w http.ResponseWriter, r *http.Request) {
+}
+
+func SearchPlaylistsHandler(w http.ResponseWriter, r *http.Request) {
+}
+
 func DeletePlaylistHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Header.Values("content-type")[0] != "application/json" {
 		w.WriteHeader(http.StatusBadRequest)

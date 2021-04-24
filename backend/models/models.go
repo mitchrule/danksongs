@@ -5,6 +5,8 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+// Structs used within MongoDB
+
 // User - Models a user and their associated credentials
 type User struct {
 	ID       primitive.ObjectID `bson:"_id,omitempty"`
