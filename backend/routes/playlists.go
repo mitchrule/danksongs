@@ -130,6 +130,44 @@ func GetPlaylistHandler(w http.ResponseWriter, r *http.Request) {
 
 // TODO
 func GetRecentPlaylistsHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Header.Values("content-type")[0] != "application/json" {
+		w.WriteHeader(http.StatusBadRequest)
+		res := ErrorResponse{
+			Code:    400,
+			Message: "Incorrect content-type",
+		}
+
+		payload, err := json.Marshal(res)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		w.Write(payload)
+	}
+
+	playLists, err := actions.GetRecentPlaylists()
+	if err != nil {
+
+		log.Println(err)
+		if err == mongo.ErrNoDocuments {
+			w.WriteHeader(http.StatusNoContent)
+		} else {
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+		return
+	}
+
+	playListByte, err := json.Marshal(playLists)
+
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	} else {
+		// Returns the playlist as a JSON
+		w.WriteHeader(http.StatusOK)
+		w.Write(playListByte)
+	}
 }
 
 func SearchPlaylistsHandler(w http.ResponseWriter, r *http.Request) {
