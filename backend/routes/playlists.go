@@ -171,6 +171,61 @@ func GetRecentPlaylistsHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func SearchPlaylistsHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Header.Values("content-type")[0] != "application/json" {
+		w.WriteHeader(http.StatusBadRequest)
+		res := ErrorResponse{
+			Code:    400,
+			Message: "Incorrect content-type",
+		}
+
+		payload, err := json.Marshal(res)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		w.Write(payload)
+		return
+	}
+
+	var searchTerm string
+
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	err = json.Unmarshal(body, &searchTerm)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	playLists, err := actions.SearchPlaylists(searchTerm)
+	if err != nil {
+
+		log.Println(err)
+		if err == mongo.ErrNoDocuments {
+			w.WriteHeader(http.StatusNoContent)
+		} else {
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+		return
+	}
+
+	playListByte, err := json.Marshal(playLists)
+
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	} else {
+		// Returns the playlist as a JSON
+		w.WriteHeader(http.StatusOK)
+		w.Write(playListByte)
+	}
 }
 
 func DeletePlaylistHandler(w http.ResponseWriter, r *http.Request) {

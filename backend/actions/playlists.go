@@ -122,7 +122,7 @@ func GetRecentPlaylists() ([]models.Playlist, error) {
 	var playLists []models.Playlist
 
 	// Sort the object ids as they are produced in an order
-	// TODO: Check this
+	// TODO: Change this to a createdAt field one day
 	opts := options.Find().SetSort(bson.D{{"_id", 1}})
 
 	// Sort for most recent
@@ -215,5 +215,35 @@ func RemoveSong(ids models.SongPLPair) (bool, error) {
 // SearchPlaylists will return the playlists that are most alike to
 // the search term imputted by the user
 func SearchPlaylists(query string) ([]models.Playlist, error) {
-	return nil, nil
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var playLists []models.Playlist
+
+	filter := bson.M{"string field": bson.M{"$Name": query}}
+
+	// Set the filter to apply on
+	// filter := bson.D{{"hello", "world"}}
+
+	// Sort the object ids as they are produced in an order
+	opts := options.Find().SetSort(bson.D{{"_id", 1}})
+
+	// Search for playlists based on the query
+	cursor, err := database.PlaylistCollection.Find(ctx, filter, opts)
+
+	// Error Check
+	if err != nil {
+		return nil, err
+	}
+
+	// Return them in an array
+	err = cursor.All(context.TODO(), &playLists)
+
+	// Return the result
+	if err != nil {
+		return nil, err
+	} else {
+		return playLists, nil
+	}
 }
