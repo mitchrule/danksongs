@@ -56,7 +56,10 @@ func InitDatabase() {
 	JWTCollection = client.Database(databaseName).Collection("tokens")
 
 	// Set any indexes here
-	PlaylistCollection.article.createIndex( { Name: “text” } )
+
+	// laylistCollection.
+
+	// /laylistCollection.article.createIndex( { Name: “text” } )
 
 	// log.Println("Database initialised", songsCollection)
 }

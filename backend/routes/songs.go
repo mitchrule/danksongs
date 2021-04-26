@@ -51,7 +51,7 @@ func CreateSongHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Placing authentication here for proof of concept
 
-	err = actions.CreateSong(song)
+	songID, err := actions.CreateSong(song)
 	if err != nil {
 		res := ErrorResponse{
 			Code:    http.StatusInternalServerError,
@@ -66,6 +66,10 @@ func CreateSongHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write(payload)
 	}
 
+	songByte, err := json.Marshal(songID)
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(songByte)
 }
 
 func GetSongHandler(w http.ResponseWriter, r *http.Request) {

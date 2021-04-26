@@ -205,7 +205,6 @@ func SearchPlaylistsHandler(w http.ResponseWriter, r *http.Request) {
 
 	playLists, err := actions.SearchPlaylists(searchTerm)
 	if err != nil {
-
 		log.Println(err)
 		if err == mongo.ErrNoDocuments {
 			w.WriteHeader(http.StatusNoContent)

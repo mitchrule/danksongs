@@ -131,11 +131,17 @@ func GetRecentPlaylists() ([]models.Playlist, error) {
 	// Return them in an array
 	err = cursor.All(context.TODO(), &playLists)
 
+	numPlaylists := len(playLists)
+
 	// Return the result
 	if err != nil {
 		return nil, err
 	} else {
-		return playLists[:NUM_PLAYLISTS_RETURNED], nil
+		if numPlaylists < NUM_PLAYLISTS_RETURNED {
+			return playLists, nil
+		} else {
+			return playLists[:NUM_PLAYLISTS_RETURNED], nil
+		}
 	}
 }
 
@@ -214,6 +220,8 @@ func RemoveSong(ids models.SongPLPair) (bool, error) {
 
 // SearchPlaylists will return the playlists that are most alike to
 // the search term imputted by the user
+
+// TODO finish this
 func SearchPlaylists(query string) ([]models.Playlist, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -221,7 +229,7 @@ func SearchPlaylists(query string) ([]models.Playlist, error) {
 
 	var playLists []models.Playlist
 
-	filter := bson.M{"string field": bson.M{"$Name": query}}
+	filter := bson.M{"Name": query}
 
 	// Set the filter to apply on
 	// filter := bson.D{{"hello", "world"}}
@@ -239,6 +247,9 @@ func SearchPlaylists(query string) ([]models.Playlist, error) {
 
 	// Return them in an array
 	err = cursor.All(context.TODO(), &playLists)
+
+	log.Println("Current Playlists: ")
+	log.Println(playLists)
 
 	// Return the result
 	if err != nil {
