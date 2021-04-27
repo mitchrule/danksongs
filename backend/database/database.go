@@ -5,9 +5,9 @@ import (
 	"log"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.mongodb.org/mongo-driver/x/bsonx"
 )
 
 // Might not be required if we can create the vote inside the
@@ -58,10 +58,7 @@ func InitDatabase() {
 
 	// Set any indexes here
 	index := mongo.IndexModel{
-		// Keys: bson.M{
-		// 	"Name": "text",
-		// },
-		Keys: bsonx.Doc{{"Name": "text"}},
+		Keys: bson.D{"Name", "text"},
 	}
 	opts := options.CreateIndexes().SetMaxTime(10 * time.Second)
 	indexName, err := PlaylistCollection.Indexes().CreateOne(ctx, index, opts)
