@@ -7,6 +7,7 @@ import (
 
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.mongodb.org/mongo-driver/x/bsonx"
 )
 
 // Might not be required if we can create the vote inside the
@@ -27,7 +28,7 @@ var UsersCollection *mongo.Collection = new(mongo.Collection)
 var JWTCollection *mongo.Collection = new(mongo.Collection)
 
 // Playlists
-var PlaylistsCollection *mongo.Collection = new(mongo.Collection)
+// var PlaylistsCollection *mongo.Collection = new(mongo.Collection)
 
 // InitDatabase initialises a global database client
 func InitDatabase() {
@@ -51,15 +52,28 @@ func InitDatabase() {
 	// Where the collections are initalised
 	PlaylistCollection = client.Database(databaseName).Collection("playlists")
 	SongsCollection = client.Database(databaseName).Collection("songs")
-	PlaylistsCollection = client.Database(databaseName).Collection("playlists")
+	// PlaylistsCollection = client.Database(databaseName).Collection("playlists")
 	UsersCollection = client.Database(databaseName).Collection("users")
 	JWTCollection = client.Database(databaseName).Collection("tokens")
 
 	// Set any indexes here
+	index := mongo.IndexModel{
+		// Keys: bson.M{
+		// 	"Name": "text",
+		// },
+		Keys: bsonx.Doc{{"Name": "text"}},
+	}
+	opts := options.CreateIndexes().SetMaxTime(10 * time.Second)
+	indexName, err := PlaylistCollection.Indexes().CreateOne(ctx, index, opts)
 
-	// laylistCollection.
+	if err != nil {
+		log.Panicln(err)
+	} else {
+		log.Println("Database Success...")
+		log.Println(indexName)
+	}
 
-	// /laylistCollection.article.createIndex( { Name: “text” } )
-
+	// PlaylistCollection
+	// PlaylistCollection.article.createIndex( { Name: “text” } )
 	// log.Println("Database initialised", songsCollection)
 }
