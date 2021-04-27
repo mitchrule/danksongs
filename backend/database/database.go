@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -58,7 +59,7 @@ func InitDatabase() {
 
 	// Set any indexes here
 	index := mongo.IndexModel{
-		Keys: bson.D{"Name", "text"},
+		Keys: bson.D{primitive.E{Key: "Name", Value: "text"}},
 	}
 	opts := options.CreateIndexes().SetMaxTime(10 * time.Second)
 	indexName, err := PlaylistCollection.Indexes().CreateOne(ctx, index, opts)
