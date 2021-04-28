@@ -8,10 +8,8 @@ before_script: pip install docker-compose
 script: if [[ "$TRAVIS_BRANCH" == "main" ]]; then
   docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD ;
   docker-compose build ;
-  docker tag api $DOCKER_USERNAME/danksongs-api:latest ;
-  docker tag ui $DOCKER_USERNAME/danksongs-ui:latest ;
-  docker push $DOCKER_USERNAME/danksongs-api:latest ;
-  docker push $DOCKER_USERNAME/danksongs-ui:latest ;
+  docker tag danksongs-server $DOCKER_USERNAME/danksongs-server:latest ;
+  docker push $DOCKER_USERNAME/danksongs-server:latest ;
   fi
 
 deploy:
@@ -22,7 +20,7 @@ deploy:
   bucket-name: elasticbeanstalk-ap-southeast-2-199561299566
   bucket-path: danksongs
   on:
-    branch: mitch/deploy
+    branch: main
   access_key_id: $AWS_ACCESS_KEY
   secret_access_key: $AWS_SECRET_KEY
   edge: true

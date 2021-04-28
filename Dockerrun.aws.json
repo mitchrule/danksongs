@@ -3,14 +3,14 @@
   "containerDefinitions": [
     {
       "essential": true,
-      "image": "mitchrule/danksongs-api",
+      "image": "mitchrule/danksongs-server",
       "links": ["mongo"],
-      "memory": 256,
-      "name": "api",
+      "memory": 512,
+      "name": "server",
       "portMappings": [
         {
           "containerPort": 8080,
-          "hostPort": 8080
+          "hostPort": 80
         }
       ]
     },
@@ -29,19 +29,6 @@
         {
           "containerPort": 27017,
           "hostPort": 27017
-        }
-      ]
-    },
-    {
-      "essential": true,
-      "image": "mitchrule/danksongs-ui",
-      "links": ["api"],
-      "memory": 256,
-      "name": "ui",
-      "portMappings": [
-        {
-          "containerPort": 3000,
-          "hostPort": 80
         }
       ]
     }
