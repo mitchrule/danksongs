@@ -258,3 +258,18 @@ func SearchPlaylists(query string) ([]models.Playlist, error) {
 		return playLists, nil
 	}
 }
+
+func VoteOnSong(playlistID string, songID string) (models.Playlist, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var playlist bson.M
+
+	err := database.PlaylistCollection.FindOne(ctx, bson.D{{"_id", playlistID}}).Decode(&playlist)
+	if err != nil {
+		log.Println("Failed to get playlist")
+		return models.Playlist{}, err
+	}
+
+	
+}

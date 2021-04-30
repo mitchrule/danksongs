@@ -1,13 +1,17 @@
 package routes
 
 import (
+	"context"
 	"encoding/json"
 	"io/ioutil"
 	"log"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	"github.com/mitchrule/danksongs/actions"
+	"github.com/mitchrule/danksongs/database"
 	"github.com/mitchrule/danksongs/models"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 // CreateSongHandler for creating new songs
@@ -85,5 +89,16 @@ func DeleteSongHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func VoteHandler(w http.ResponseWriter, r *http.Request) {
+	// Get playlist
+	// Find song in playlist
+	// 	Increment vote counter
+	// Update playlist database record
+	params := mux.Vars(r)
+	playlistID := params["playlistid"]
+	songID := params["songid"]
+
+	var playlist bson.M
+	err = database.PlaylistCollection.FindOne(context.WithTimeout()) 
+	
 	w.Write([]byte("Hit VoteHandler"))
 }
