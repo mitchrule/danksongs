@@ -232,21 +232,18 @@ func SearchPlaylists(query string) ([]models.Playlist, error) {
 	// regex := bson.M{"$regex": bson.RegEx{Pattern: query}}
 
 	//filter := bson.D{{"Name": query}}
-	// filter := bson.D{{"name", query}}
+	filter := bson.D{{"name", query}}
 
 	// log.Println("Current Filter")
 	// log.Println(filter)
 
-	// Set the filter to apply on
-	// filter := bson.D{{"hello", "world"}}
-
 	// Sort the object ids as they are produced in an order
-	// opts := options.Find().SetSort(bson.D{{"_id", 1}})
+	opts := options.Find().SetSort(bson.D{{"_id", 1}})
 
 	// Search for playlists based on the query
-	// cursor, err := database.PlaylistCollection.Find(ctx, filter, opts)
+	cursor, err := database.PlaylistCollection.Find(ctx, filter, opts)
 
-	cursor, err := database.PlaylistCollection.Find(ctx, bson.M{"name": query})
+	// cursor, err := database.PlaylistCollection.Find(ctx, bson.M{"name": query})
 
 	// Error Check
 	if err != nil {
