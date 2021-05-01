@@ -219,9 +219,8 @@ func RemoveSong(ids models.SongPLPair) (bool, error) {
 }
 
 // SearchPlaylists will return the playlists that are most alike to
-// the search term imputted by the user
-
-// TODO finish this
+// the search term inputted by the user
+// TODO one day make index based do partial text serches will work as well
 func SearchPlaylists(query string) ([]models.Playlist, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
@@ -229,24 +228,36 @@ func SearchPlaylists(query string) ([]models.Playlist, error) {
 
 	var playLists []models.Playlist
 
-	filter := bson.M{"Name": query}
+	// Ensure there is an indesx to work with
+	// regex := bson.M{"$regex": bson.RegEx{Pattern: query}}
+
+	//filter := bson.D{{"Name": query}}
+	// filter := bson.D{{"name", query}}
+
+	// log.Println("Current Filter")
+	// log.Println(filter)
 
 	// Set the filter to apply on
 	// filter := bson.D{{"hello", "world"}}
 
 	// Sort the object ids as they are produced in an order
-	opts := options.Find().SetSort(bson.D{{"_id", 1}})
+	// opts := options.Find().SetSort(bson.D{{"_id", 1}})
 
 	// Search for playlists based on the query
-	cursor, err := database.PlaylistCollection.Find(ctx, filter, opts)
+	// cursor, err := database.PlaylistCollection.Find(ctx, filter, opts)
+
+	cursor, err := database.PlaylistCollection.Find(ctx, bson.M{"name": query})
 
 	// Error Check
 	if err != nil {
 		return nil, err
+	} else {
+		log.Println("Current Cursor")
+		log.Println(cursor)
 	}
 
 	// Return them in an array
-	err = cursor.All(context.TODO(), &playLists)
+	err = cursor.All(ctx, &playLists)
 
 	log.Println("Current Playlists: ")
 	log.Println(playLists)
