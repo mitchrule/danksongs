@@ -40,7 +40,7 @@ type Song struct {
 // Playlist - Models a list of songs to be voted on
 type Playlist struct {
 	ID   primitive.ObjectID `bson:"_id,omitempty"`
-	Name string             `bson:"string,omitempty"`
+	Name string             `bson:"name,omitempty"`
 
 	// TODO: Change the model into something that can be returned in a json
 	Songs          []Song  `bson:"songs,omitempty"`
