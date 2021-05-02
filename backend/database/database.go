@@ -5,9 +5,9 @@ import (
 	"log"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.mongodb.org/mongo-driver/x/bsonx"
 )
 
 // Might not be required if we can create the vote inside the
@@ -56,11 +56,20 @@ func InitDatabase() {
 	UsersCollection = client.Database(databaseName).Collection("users")
 	JWTCollection = client.Database(databaseName).Collection("tokens")
 
+	// Clear out any existing indexes to reset the database
+	PlaylistCollection.Indexes().DropAll(ctx)
+	log.Println("Index Cleared...")
+
 	// Set any indexes here
 	index := mongo.IndexModel{
 		// Keys: bson.D{primitive.E{Key: "Name", Value: "text"}},
-		Keys: bsonx.Doc{{Key: "Name", Value: bsonx.String("text")}},
+		// Keys: bsonx.Doc{{Key: "Name", Value: bsonx.String("text")}},
+		// Keys: bsonx.Doc{{Key: "Name", Value: "text"}},
+		Keys: bson.D{{"name", "text"}},
 	}
+	log.Println("Current Index")
+	log.Println(index)
+
 	opts := options.CreateIndexes().SetMaxTime(10 * time.Second)
 	indexName, err := PlaylistCollection.Indexes().CreateOne(ctx, index, opts)
 
@@ -70,25 +79,4 @@ func InitDatabase() {
 		log.Println("Database Success...")
 		log.Println(indexName)
 	}
-
-	// PlaylistCollection
-	// PlaylistCollection.article.createIndex( { Name: “text” } )
-	// log.Println("Database initialised", songsCollection)
 }
-
-/*
-func AddIndex(dbName string, collection string, indexKeys interface{}) error {
-    db := getNewDbClient() // get clients of mongodb connection
-    serviceCollection := db.Database(dbName).Collection(collection)
-    indexName, err := serviceCollection.Indexes().CreateOne(mtest.Background, mongo.IndexModel{
-        Keys: indexKeys,
-    })
-    if err != nil {
-        return err
-    }
-    fmt.Println(indexName)
-    return nil
-}
-
-AddIndex("mydb", "mycollection", bson.D{{"myFirstTextField", "text"},{"mySecondTextField", "text"}})
-*/

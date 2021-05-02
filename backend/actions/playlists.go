@@ -228,11 +228,10 @@ func SearchPlaylists(query string) ([]models.Playlist, error) {
 
 	var playLists []models.Playlist
 
-	// Ensure there is an indesx to work with
 	// regex := bson.M{"$regex": bson.RegEx{Pattern: query}}
 
-	//filter := bson.D{{"Name": query}}
-	filter := bson.D{{"name", query}}
+	filter := bson.D{{"$text", bson.D{{"$search", query}}}}
+	// filter := bson.D{{"name", query}}
 
 	// log.Println("Current Filter")
 	// log.Println(filter)
@@ -247,6 +246,7 @@ func SearchPlaylists(query string) ([]models.Playlist, error) {
 
 	// Error Check
 	if err != nil {
+		log.Println("error...")
 		return nil, err
 	} else {
 		log.Println("Current Cursor")
