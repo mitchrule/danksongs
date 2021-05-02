@@ -72,6 +72,11 @@ func CreateSongHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(songByte)
 }
 
+// TODO implement this
+func SearchSpotifyForSongsHandler(w http.ResponseWriter, r *http.Request) {
+	w.Write([]byte("Hit GetSearchSpotifyForSongs Handler"))
+}
+
 func GetSongHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write([]byte("Hit GetSongHandler"))
 }

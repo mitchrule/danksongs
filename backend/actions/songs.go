@@ -36,3 +36,15 @@ func newSong(title string, artist string, url string) *models.Song {
 
 	return &song
 }
+
+// TODO Implement this
+func searchSpotifyForSongs(song string) []*models.Song {
+
+	// Take query term
+
+	// Query Spotify based on search term
+
+	// Return assoicated songs as an array of songs
+
+	return nil
+}

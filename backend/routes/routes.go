@@ -71,6 +71,9 @@ func NewRouter() *mux.Router {
 	r.HandleFunc("/api/song", middleware.AuthMiddleware(DeleteSongHandler)).Methods("DELETE")
 	r.HandleFunc("/api/song/vote", middleware.AuthMiddleware(VoteHandler)).Methods("POST")
 
+	// Spotify API based query
+	r.HandleFunc("/api/song/search", middleware.AuthMiddleware(SearchSpotifyForSongsHandler)).Methods("POST")
+
 	// Playlist routes
 	r.HandleFunc("/api/playlist", middleware.AuthMiddleware(CreatePlaylistHandler)).Methods("POST")
 	r.HandleFunc("/api/playlist", GetPlaylistHandler).Methods("GET")
