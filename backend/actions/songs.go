@@ -3,12 +3,13 @@ package actions
 import (
 	"context"
 	"log"
+	"os"
 	"time"
 
 	"github.com/mitchrule/danksongs/database"
 	"github.com/mitchrule/danksongs/models"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"github.com/zmb3/spotify"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/oauth2/clientcredentials"
 )
 
@@ -28,67 +29,72 @@ func CreateSong(song models.Song) (primitive.ObjectID, error) {
 }
 
 // NewSong returns a pointer to a song with 0 votes
-func newSong(title string, artist string, url string) *models.Song {
+func newSong(title string, artists string, uri string) *models.Song {
 	song := models.Song{
-		Title:  title,
-		Artist: artist,
-		URL:    url,
-		Votes:  []models.Vote{},
+		Title:   title,
+		Artists: artists,
+		URI:     uri,
+		Votes:   []models.Vote{},
 	}
 
 	return &song
 }
 
-// TODO Implement this
+// searchSpotifyForSong querys spotifys api for a particular song based
+// on a string that the user inputs and returns an array of songs
 func searchSpotifyForSongs(query string) ([]*models.Song, error) {
 
-	// Take query term
-
-	// Query Spotify based on search term
-
-	// Return assoicated songs as an array of songs
-
-	// Example to use
-
+	// Config inorder to access Spotify API (might move to database or make an init for spotify)
 	config := &clientcredentials.Config{
-		// ClientID:     os.Getenv("SPOTIFY_ID"),
-		// ClientSecret: os.Getenv("SPOTIFY_SECRET"),
-		ClientID: byte[]("test")
-		ClientSecret: byte[]("test")
-		TokenURL:  spotify.TokenURL,
+		ClientID:     os.Getenv("SPOTIFY_ID"),
+		ClientSecret: os.Getenv("SPOTIFY_SECRET"),
+		TokenURL:     spotify.TokenURL,
 	}
 	token, err := config.Token(context.Background())
 	if err != nil {
 		log.Fatalf("couldn't get token: %v", err)
 	}
-
 	client := spotify.Authenticator{}.NewClient(token)
-	// search for playlists and albums containing "holiday"
-	results, err := client.Search(query, spotify.SearchTypeSong)
+
+	// Query Spotify based on search term
+	results, err := client.Search(query, spotify.SearchTypeTrack)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// handle album results
-	if results.Songs != nil {
+	var songs []*models.Song
+	var artistsString string
+
+	// handle song results and convert them into
+	// an array of song structs that we can use
+	if results.Tracks != nil {
 		log.Println("Songs:")
-		for _, item := range results.Albums.Albums {
+		for _, item := range results.Tracks.Tracks {
 			log.Println("   ", item.Name)
 			log.Println("Other Assoicated Data: ")
 			log.Println(item)
+
+			artistsString = ""
+			for artists := range item.Artists {
+				artistsString += artists.Name
+			}
+
+			// Assign the detail from the struct for it
+			currSong := models.Song{
+				ID:    item.ID,
+				Title: item.Name,
+				Artist: artistsString,
+				URI:    string(item.URI),
+				Votes:  []models.Vote,
+			}
+
+			songs = append(songs, &currSong)
 		}
 	}
-	// handle playlist results
-	// if results.Playlists != nil {
-	// 	fmt.Println("Playlists:")
-	// 	for _, item := range results.Playlists.Playlists {
-	// 		fmt.Println("   ", item.Name)
-	// 	}
-	// }
 
-
+	// Return songs or an associated error
 	if err != nil {
-		return results, nil
+		return songs, nil
 	} else {
 		return nil, err
 	}
