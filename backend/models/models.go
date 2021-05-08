@@ -48,8 +48,9 @@ type Playlist struct {
 	VotePreportion float64 `bson:"votepreportion,omitempty"`
 }
 
-// Structs used to capture data from requests
-
+/*
+	Structs used to capture data from http requests
+*/
 // PlaylistData - Captures data for create playlist
 type PlaylistData struct {
 	PlayListName   string
