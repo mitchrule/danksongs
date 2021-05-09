@@ -2,6 +2,7 @@ package models
 
 import (
 	"github.com/dgrijalva/jwt-go"
+	"github.com/zmb3/spotify"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -30,11 +31,11 @@ type Claims struct {
 
 // Song - Models a song
 type Song struct {
-	ID     primitive.ObjectID `bson:"_id,omitempty"`
-	Title  string             `bson:"title,omitempty"`
-	Artist string             `bson:"artist,omitempty"`
-	URL    string             `bson:"url,omitempty"`
-	Votes  []Vote             `bson:"votes,omitempty"`
+	ID      spotify.ID `bson:"_id,omitempty"`
+	Title   string     `bson:"title,omitempty"`
+	Artists string     `bson:"artists,omitempty"`
+	URI     string     `bson:"uri,omitempty"`
+	Votes   []Vote     `bson:"votes,omitempty"`
 }
 
 // Playlist - Models a list of songs to be voted on
@@ -48,8 +49,9 @@ type Playlist struct {
 	VotePreportion float64 `bson:"votepreportion,omitempty"`
 }
 
-// Structs used to capture data from requests
-
+/*
+	Structs used to capture data from http requests
+*/
 // PlaylistData - Captures data for create playlist
 type PlaylistData struct {
 	PlayListName   string
@@ -60,6 +62,6 @@ type PlaylistData struct {
 // SongPLPair - A song ID and an associated Playlist ID for Add/Remove Song to work
 // with
 type SongPLPair struct {
-	SongID     primitive.ObjectID
+	SongID     spotify.ID
 	PlaylistID primitive.ObjectID
 }
