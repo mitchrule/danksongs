@@ -42,7 +42,8 @@ func newSong(title string, artists string, uri string) *models.Song {
 
 // searchSpotifyForSong querys spotifys api for a particular song based
 // on a string that the user inputs and returns an array of songs
-func searchSpotifyForSongs(query string) ([]*models.Song, error) {
+func SearchSpotifyForSongs(query string) ([]models.Song, error) {
+	log.Println("Searching...")
 
 	// Config inorder to access Spotify API (might move to database or make an init for spotify)
 	config := &clientcredentials.Config{
@@ -50,6 +51,10 @@ func searchSpotifyForSongs(query string) ([]*models.Song, error) {
 		ClientSecret: os.Getenv("SPOTIFY_SECRET"),
 		TokenURL:     spotify.TokenURL,
 	}
+
+	// log.Println("Current ID")
+	// log.Println(os.LookupEnv("SPOTIFY_ID"))
+
 	token, err := config.Token(context.Background())
 	if err != nil {
 		log.Fatalf("couldn't get token: %v", err)
@@ -62,16 +67,14 @@ func searchSpotifyForSongs(query string) ([]*models.Song, error) {
 		log.Fatal(err)
 	}
 
-	var songs []*models.Song
+	var songs []models.Song
 
 	// handle song results and convert them into
 	// an array of song structs that we can use
 	if results.Tracks != nil {
-		log.Println("Songs:")
 		for _, item := range results.Tracks.Tracks {
-			log.Println("   ", item.Name)
-			log.Println("Other Assoicated Data: ")
-			log.Println(item)
+			// log.Println("Other Assoicated Data: ")
+			// log.Println(item)
 
 			artistsString := ""
 			for _, artists := range item.Artists {
@@ -79,7 +82,8 @@ func searchSpotifyForSongs(query string) ([]*models.Song, error) {
 				artistsString += artists.Name + " ,"
 			}
 
-			// Assign the detail from the struct for it
+			// Assign the associated
+			// detail from the item to our struct
 			currSong := models.Song{
 				ID:      item.ID,
 				Title:   item.Name,
@@ -88,14 +92,14 @@ func searchSpotifyForSongs(query string) ([]*models.Song, error) {
 				Votes:   []models.Vote{},
 			}
 
-			songs = append(songs, &currSong)
+			songs = append(songs, currSong)
 		}
 	}
 
 	// Return songs or an associated error
 	if err != nil {
-		return songs, nil
-	} else {
 		return nil, err
+	} else {
+		return songs, nil
 	}
 }

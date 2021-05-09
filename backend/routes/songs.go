@@ -73,7 +73,7 @@ func CreateSongHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(songByte)
 }
 
-// TODO implement this
+// Handles the /songs/search API route
 func SearchSpotifyForSongsHandler(w http.ResponseWriter, r *http.Request) {
 	if r.Header.Values("content-type")[0] != "application/json" {
 		w.WriteHeader(http.StatusBadRequest)
@@ -106,7 +106,8 @@ func SearchSpotifyForSongsHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	songs, err := actions.SearchPlaylists(searchTerm)
+	songs, err := actions.SearchSpotifyForSongs(searchTerm)
+
 	if err != nil {
 		log.Println(err)
 		if err == mongo.ErrNoDocuments {
