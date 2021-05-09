@@ -11,6 +11,7 @@ import (
 	"github.com/mitchrule/danksongs/models"
 
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -99,6 +100,20 @@ func LoginUser(user models.User) (string, error) {
 		return "", err
 	}
 	return jwtToken, nil
+}
+
+// LogoutUser takes a userID and removes the
+// session token that the user has stored for
+// the user as well as revoking their JWT Claim
+func LogoutUser(userID primitive.ObjectID) (bool, error) {
+	return false, nil
+}
+
+// DeleteUser removes a user from the Database based on
+// the userID provided and logs the user out in the
+// process
+func DeleteUser(userID primitive.ObjectID) (bool, error) {
+	return false, nil
 }
 
 ////////////////////////////////////////////////////////////////////

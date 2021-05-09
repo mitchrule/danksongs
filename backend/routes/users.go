@@ -113,5 +113,11 @@ func LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func LogoutUserHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusExpectationFailed)
 	w.Write([]byte("Hit LogoutUserHandler"))
+}
+
+func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusExpectationFailed)
+	w.Write([]byte("Hit DeleteUserHandler"))
 }
