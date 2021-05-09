@@ -62,6 +62,6 @@ type PlaylistData struct {
 // SongPLPair - A song ID and an associated Playlist ID for Add/Remove Song to work
 // with
 type SongPLPair struct {
-	SongID     primitive.ObjectID
+	SongID     spotify.ID
 	PlaylistID primitive.ObjectID
 }

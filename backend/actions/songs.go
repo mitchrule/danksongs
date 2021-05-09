@@ -63,7 +63,6 @@ func searchSpotifyForSongs(query string) ([]*models.Song, error) {
 	}
 
 	var songs []*models.Song
-	var artistsString string
 
 	// handle song results and convert them into
 	// an array of song structs that we can use
@@ -74,18 +73,19 @@ func searchSpotifyForSongs(query string) ([]*models.Song, error) {
 			log.Println("Other Assoicated Data: ")
 			log.Println(item)
 
-			artistsString = ""
-			for artists := range item.Artists {
-				artistsString += artists.Name
+			artistsString := ""
+			for _, artists := range item.Artists {
+
+				artistsString += artists.Name + " ,"
 			}
 
 			// Assign the detail from the struct for it
 			currSong := models.Song{
-				ID:    item.ID,
-				Title: item.Name,
-				Artist: artistsString,
-				URI:    string(item.URI),
-				Votes:  []models.Vote,
+				ID:      item.ID,
+				Title:   item.Name,
+				Artists: artistsString,
+				URI:     string(item.URI),
+				Votes:   []models.Vote{},
 			}
 
 			songs = append(songs, &currSong)
