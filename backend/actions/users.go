@@ -112,3 +112,7 @@ func getHash(pwd []byte) string {
 	}
 	return string(hash)
 }
+
+func GetUserFromToken(token string) models.User {
+
+}

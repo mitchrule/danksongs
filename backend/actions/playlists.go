@@ -263,7 +263,7 @@ func VoteOnSong(playlistID string, songID string) (models.Playlist, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	var playlist bson.M
+	var playlist models.Playlist
 
 	err := database.PlaylistCollection.FindOne(ctx, bson.D{{"_id", playlistID}}).Decode(&playlist)
 	if err != nil {
@@ -271,5 +271,9 @@ func VoteOnSong(playlistID string, songID string) (models.Playlist, error) {
 		return models.Playlist{}, err
 	}
 
-	
+	for _, song := range playlist.Songs {
+		if song.ID.String() == songID {
+
+		}
+	}
 }
