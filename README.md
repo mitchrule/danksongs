@@ -1,5 +1,7 @@
 # [danksongs](https://danksongs.com/)
 
+[![Build Status](https://travis-ci.com/mitchrule/danksongs.svg?branch=main)](https://travis-ci.com/mitchrule/danksongs)
+
 ## Setup and Run
 
 First make sure you have [Docker](https://www.docker.com/get-started) installed.

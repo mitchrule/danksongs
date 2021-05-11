@@ -3,7 +3,9 @@ package actions
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
+	"os"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -100,6 +102,22 @@ func LoginUser(user models.User) (string, error) {
 	return jwtToken, nil
 }
 
+func GetUserFromToken(tokenString string) interface{} {
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+		}
+
+		return []byte(os.Getenv("SECRET_KEY")), nil
+	})
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		return claims["username"]
+	} else {
+		log.Println(err)
+		return nil
+	}
+}
 ////////////////////////////////////////////////////////////////////
 ///////////////////// Helper functions /////////////////////////////
 ////////////////////////////////////////////////////////////////////
@@ -113,6 +131,3 @@ func getHash(pwd []byte) string {
 	return string(hash)
 }
 
-func GetUserFromToken(token string) models.User {
-
-}

@@ -1,17 +1,15 @@
 package routes
 
 import (
-	"context"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
 	"github.com/mitchrule/danksongs/actions"
-	"github.com/mitchrule/danksongs/database"
 	"github.com/mitchrule/danksongs/models"
-	"go.mongodb.org/mongo-driver/bson"
 )
 
 // CreateSongHandler for creating new songs
@@ -94,11 +92,19 @@ func VoteHandler(w http.ResponseWriter, r *http.Request) {
 	// 	Increment vote counter
 	// Update playlist database record
 	params := mux.Vars(r)
+	token, err := r.Cookie("token")
+	if err != nil {
+		w.WriteHeader(http.StatusForbidden)
+		return
+	}
+
+	tokenString := token.String()
+
 	playlistID := params["playlistid"]
 	songID := params["songid"]
+	username := fmt.Sprintf("%v", actions.GetUserFromToken(tokenString))                                                     
 
-	var playlist bson.M
-	err = database.PlaylistCollection.FindOne(context.WithTimeout()) 
+	playlist, err := actions.VoteOnSong(playlistID, songID, username)
 	
 	w.Write([]byte("Hit VoteHandler"))
 }
