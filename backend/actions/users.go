@@ -102,7 +102,10 @@ func LoginUser(user models.User) (string, error) {
 	return jwtToken, nil
 }
 
-func GetUserFromToken(tokenString string) interface{} {
+func GetUserFromToken(tokenString string) (models.User, error) {
+	var username string
+
+	// decode the token
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
@@ -112,12 +115,24 @@ func GetUserFromToken(tokenString string) interface{} {
 	})
 
 	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
-		return claims["username"]
+		username = fmt.Sprintf("%v", claims["username"])
 	} else {
 		log.Println(err)
-		return nil
+		return models.User{}, err
 	}
+
+	// get user by username from db
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	var user models.User
+	err = database.UsersCollection.FindOne(ctx, bson.D{{"name", username}}).Decode(&user)
+	if err != nil {
+		return models.User{}, err
+	}
+
+	return user, nil
 }
+
 ////////////////////////////////////////////////////////////////////
 ///////////////////// Helper functions /////////////////////////////
 ////////////////////////////////////////////////////////////////////
@@ -130,4 +145,3 @@ func getHash(pwd []byte) string {
 	}
 	return string(hash)
 }
-

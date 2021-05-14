@@ -2,6 +2,7 @@ package actions
 
 import (
 	"context"
+	"errors"
 	"log"
 	"time"
 
@@ -259,21 +260,45 @@ func SearchPlaylists(query string) ([]models.Playlist, error) {
 	}
 }
 
-func VoteOnSong(playlistID string, songID string, username string) (models.Playlist, error) {
+func VoteOnSong(playlistID primitive.ObjectID, songID primitive.ObjectID, user models.User) (models.Playlist, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
 	var playlist models.Playlist
+	filter := bson.D{primitive.E{Key: "_id", Value: playlistID}}
 
-	err := database.PlaylistCollection.FindOne(ctx, bson.D{{"_id", playlistID}}).Decode(&playlist)
+	err := database.PlaylistCollection.FindOne(ctx, filter).Decode(&playlist)
 	if err != nil {
 		log.Println("Failed to get playlist")
 		return models.Playlist{}, err
 	}
 
 	for _, song := range playlist.Songs {
-		if song.ID.String() == songID {
-
+		if song.ID == songID {
+			if votedOnSong(user, song) {
+				return models.Playlist{}, errors.New("user has already voted on this song")
+			} else {
+				vote := models.Vote{VoterID: user.ID}
+				song.Votes = append(song.Votes, vote)
+			}
 		}
 	}
+
+	var updatedPlaylist models.Playlist
+	err = database.PlaylistCollection.FindOneAndUpdate(ctx, filter, playlist).Decode(updatedPlaylist)
+	if err != nil {
+		return playlist, err
+	}
+
+	return updatedPlaylist, nil
+}
+
+// Checks if user has already voted on this song
+func votedOnSong(user models.User, song models.Song) bool {
+	for _, vote := range song.Votes {
+		if vote.VoterID == user.ID {
+			return true
+		}
+	}
+	return false
 }

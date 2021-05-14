@@ -16,9 +16,7 @@ type User struct {
 
 // A Vote With the user assoicated with it
 type Vote struct {
-	ID      primitive.ObjectID `bson:"_id,omitempty"`
 	VoterID primitive.ObjectID `bson:"_voterid,omitempty"`
-	Time    primitive.DateTime `bson:"time,omitempty"`
 }
 
 // Claims - for the JWT token verification
