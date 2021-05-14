@@ -61,7 +61,7 @@ func InitDatabase() {
 	index := mongo.IndexModel{
 		Keys: bson.D{primitive.E{Key: "Name", Value: "text"}},
 	}
-	opts := options.CreateIndexes().SetMaxTime(10 * time.Second)
+	opts := options.CreateIndexes().SetMaxTime(100 * time.Second)
 	indexName, err := PlaylistCollection.Indexes().CreateOne(ctx, index, opts)
 
 	if err != nil {

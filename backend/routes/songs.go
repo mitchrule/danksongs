@@ -2,7 +2,6 @@ package routes
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -10,6 +9,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/mitchrule/danksongs/actions"
 	"github.com/mitchrule/danksongs/models"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // CreateSongHandler for creating new songs
@@ -100,11 +100,36 @@ func VoteHandler(w http.ResponseWriter, r *http.Request) {
 
 	tokenString := token.String()
 
-	playlistID := params["playlistid"]
-	songID := params["songid"]
-	username := fmt.Sprintf("%v", actions.GetUserFromToken(tokenString))                                                     
+	playlistID, err := primitive.ObjectIDFromHex(params["playlistid"])
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+	}
 
-	playlist, err := actions.VoteOnSong(playlistID, songID, username)
+	songID, err := primitive.ObjectIDFromHex(params["songid"])
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+	}
+
+	user, err := actions.GetUserFromToken(tokenString)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+	}                                                   
+
+	playlist, err := actions.VoteOnSong(playlistID, songID, user)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
 	
-	w.Write([]byte("Hit VoteHandler"))
+	res, err := json.Marshal(playlist)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	log.Println("Vote added")
+	w.Write(res)
 }
