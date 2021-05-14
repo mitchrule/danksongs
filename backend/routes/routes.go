@@ -77,7 +77,7 @@ func NewRouter() *mux.Router {
 	// Delete the whole playlist
 	r.HandleFunc("/api/playlist", middleware.AuthMiddleware(DeletePlaylistHandler)).Methods("DELETE")
 	// Add and delete SONGS from playlist
-	r.HandleFunc("/api/playlist/add", middleware.AuthMiddleware(AddSongHandler)).Methods("POST")
+	r.HandleFunc("/api/playlist/{playlistid}/add", middleware.AuthMiddleware(AddSongHandler)).Methods("POST")
 	r.HandleFunc("/api/playlist/remove", middleware.AuthMiddleware(RemoveSongHandler)).Methods("DELETE")
 	r.HandleFunc("/api/vote/{playlistid}/{songid}", middleware.AuthMiddleware(VoteHandler)).Methods("POST")
 	// Addional functions to retrieve playlist data
