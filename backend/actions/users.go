@@ -106,6 +106,20 @@ func LoginUser(user models.User) (string, error) {
 // session token that the user has stored for
 // the user as well as revoking their JWT Claim
 func LogoutUser(userID primitive.ObjectID) (bool, error) {
+
+	// Locate the users details within the database
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// Retrieve the details of the user from db
+	var dbUser models.User
+	err := database.UsersCollection.FindOne(ctx, bson.M{"_id": userID}).Decode(&dbUser)
+	if err != nil {
+		return false, err
+	}
+
+	// Revoke the JWT claim
+
 	return false, nil
 }
 

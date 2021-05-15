@@ -9,6 +9,7 @@ import (
 
 	"github.com/mitchrule/danksongs/actions"
 	"github.com/mitchrule/danksongs/models"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // CreateUserHandler manages the http request
@@ -112,9 +113,52 @@ func LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// Handles logout request
 func LogoutUserHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusExpectationFailed)
-	w.Write([]byte("Hit LogoutUserHandler"))
+
+	// Check to see if the request is the correct format
+	if r.Header.Values("content-type")[0] != "application/json" {
+		w.WriteHeader(http.StatusBadRequest)
+		res := ErrorResponse{
+			Code:    400,
+			Message: "Incorrect content-type",
+		}
+
+		payload, err := json.Marshal(res)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		w.Write(payload)
+	}
+
+	var userID primitive.ObjectID
+
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		log.Println(err)
+	}
+
+	err = json.Unmarshal(body, &userID)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		log.Println(err)
+	}
+
+	success, err := actions.LogoutUser(userID)
+	if err != nil || !success {
+		w.WriteHeader(http.StatusInternalServerError)
+	} else {
+		// Remove the users token cookie
+
+		// Remove the users authorisation header
+
+		// Direct them to the homepage
+
+	}
+	// w.WriteHeader(http.StatusExpectationFailed)
+	// w.Write([]byte("Hit LogoutUserHandler"))
 }
 
 func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
