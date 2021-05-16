@@ -54,7 +54,7 @@ func InitDatabase() {
 	SongsCollection = client.Database(databaseName).Collection("songs")
 	// PlaylistsCollection = client.Database(databaseName).Collection("playlists")
 	UsersCollection = client.Database(databaseName).Collection("users")
-	JWTCollection = client.Database(databaseName).Collection("tokens")
+	JWTCollection = client.Database(databaseName).Collection("claims")
 
 	// Clear out any existing indexes to reset the database
 	PlaylistCollection.Indexes().DropAll(ctx)

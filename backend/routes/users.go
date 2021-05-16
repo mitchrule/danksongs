@@ -132,6 +132,8 @@ func LogoutUserHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write(payload)
 	}
 
+	// @TODO Fetch the JWT token from the user cookie
+	// instead of passing it through as a function
 	var userID primitive.ObjectID
 
 	body, err := ioutil.ReadAll(r.Body)

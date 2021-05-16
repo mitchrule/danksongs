@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"log"
+	"os"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -85,7 +86,7 @@ func LoginUser(user models.User) (string, error) {
 	}
 
 	// Place in db otherwise
-	insertResult, err := database.UsersCollection.InsertOne(ctx, claim)
+	insertResult, err := database.JWTCollection.InsertOne(ctx, claim)
 	if err != nil {
 		log.Println("token insert error")
 		log.Println(err)
@@ -105,27 +106,44 @@ func LoginUser(user models.User) (string, error) {
 // LogoutUser takes a userID and removes the
 // session token that the user has stored for
 // the user as well as revoking their JWT Claim
-func LogoutUser(userID primitive.ObjectID) (bool, error) {
+func LogoutUser(tknStr string) (bool, error) {
 
 	// Locate the users details within the database
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+	// ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	// defer cancel()
 
-	// Retrieve the details of the user from db
-	var dbUser models.User
-	err := database.UsersCollection.FindOne(ctx, bson.M{"_id": userID}).Decode(&dbUser)
-	if err != nil {
+	// Take the JWT token provided by the user and parse it to retrieve the associated claims
+	// info
+
+	// Initialize a new instance of Claims
+	claim := models.Claims{}
+
+	// Parse the JWT string and store the result in claims.
+	tkn, err := jwt.ParseWithClaims(tknStr, &claim, func(token *jwt.Token) (interface{}, error) {
+		// I dont like that for this to work we have to return our secret key
+		// Will fix if I can
+		return []byte(os.Getenv("SECRET_KEY")), nil
+	})
+
+	if err != nil || !tkn.Valid {
 		return false, err
 	}
 
-	// Revoke the JWT claim
+	// @TODO find and delete the associated JWT claim
 
+	// Retrieve the details of the user from db based on their name
+	// var dbUser models.User
+	// err := database.UsersCollection.FindOne(ctx, bson.M{"_id": userID}).Decode(&dbUser)
+	// if err != nil {
+	// 	return false, err
+	// }
+
+	// Revoke the JWT claim
 	return false, nil
 }
 
 // DeleteUser removes a user from the Database based on
-// the userID provided and logs the user out in the
-// process
+// the userID provided and logs the user out in the process
 func DeleteUser(userID primitive.ObjectID) (bool, error) {
 	return false, nil
 }
