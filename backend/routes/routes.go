@@ -79,7 +79,7 @@ func NewRouter() *mux.Router {
 	// Add and delete SONGS from playlist
 	r.HandleFunc("/api/playlist/{playlistid}/add", middleware.AuthMiddleware(AddSongHandler)).Methods("POST")
 	r.HandleFunc("/api/playlist/remove", middleware.AuthMiddleware(RemoveSongHandler)).Methods("DELETE")
-	r.HandleFunc("/api/vote/{playlistid}/{songid}", middleware.AuthMiddleware(VoteHandler)).Methods("POST")
+	r.HandleFunc("/api/vote/{playlistid}/{songid}", middleware.AuthMiddleware(VoteHandler)).Methods("PUT")
 	// Addional functions to retrieve playlist data
 	r.HandleFunc("/api/playlist/getRecent", GetRecentPlaylistsHandler).Methods("GET")
 	r.HandleFunc("/api/playlist/search", middleware.AuthMiddleware(SearchPlaylistsHandler)).Methods("POST")

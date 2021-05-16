@@ -18,7 +18,7 @@ import (
 )
 
 // The length of time a cookie lasts before it expires
-const SESSION_MINS = time.Duration(30) * time.Minute
+const SESSION_MINS = time.Duration(24) * time.Hour
 
 // CreateUser adds a user to the database
 func CreateUser(user models.User) error {
@@ -33,7 +33,7 @@ func CreateUser(user models.User) error {
 	err := database.UsersCollection.FindOne(ctx, bson.M{"name": user.Name}).Err()
 	if err != mongo.ErrNoDocuments {
 		log.Println("Duplicate User...")
-		return errors.New("Duplicate user")
+		return errors.New("duplicate user")
 	}
 
 	// Place in db otherwise
@@ -108,7 +108,7 @@ func GetUserFromToken(tokenString string) (models.User, error) {
 	// decode the token
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
 
 		return []byte(os.Getenv("SECRET_KEY")), nil

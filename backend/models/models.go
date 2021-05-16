@@ -28,20 +28,20 @@ type Claims struct {
 
 // Song - Models a song
 type Song struct {
-	ID     primitive.ObjectID `bson:"_id,omitempty"`
+	ID     primitive.ObjectID `bson:"_id"`
 	Title  string             `bson:"title,omitempty"`
 	Artist string             `bson:"artist,omitempty"`
 	URL    string             `bson:"url,omitempty"`
-	Votes  []Vote             `bson:"votes,omitempty"`
+	Votes  []Vote             `bson:"votes"`
 }
 
 // Playlist - Models a list of songs to be voted on
 type Playlist struct {
 	ID   primitive.ObjectID `bson:"_id,omitempty"`
-	Name string             `bson:"string,omitempty"`
+	Name string             `bson:"name,omitempty"`
 
 	// TODO: Change the model into something that can be returned in a json
-	Songs          []Song  `bson:"songs,omitempty"`
+	Songs          []Song  `bson:"songs"`
 	VoteThreshold  uint16  `bson:"votethreshold,omitempty"`
 	VotePreportion float64 `bson:"votepreportion,omitempty"`
 }

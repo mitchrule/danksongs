@@ -24,6 +24,8 @@ services:
       - mongodata:/data/db
     restart: always
     mem_limit: 256m
+    logging:
+      driver: none
 
 volumes:
   mongodata:

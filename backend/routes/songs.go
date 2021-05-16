@@ -94,40 +94,46 @@ func VoteHandler(w http.ResponseWriter, r *http.Request) {
 	params := mux.Vars(r)
 	token, err := r.Cookie("token")
 	if err != nil {
-		w.WriteHeader(http.StatusForbidden)
+		http.Error(w, err.Error(), http.StatusForbidden)
 		return
 	}
 
-	tokenString := token.String()
+	tokenString := token.Value
 
 	playlistID, err := primitive.ObjectIDFromHex(params["playlistid"])
 	if err != nil {
 		log.Println(err)
-		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
 	songID, err := primitive.ObjectIDFromHex(params["songid"])
 	if err != nil {
 		log.Println(err)
-		w.WriteHeader(http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
 	}
 
 	user, err := actions.GetUserFromToken(tokenString)
+	log.Println(user)
 	if err != nil {
 		log.Println(err)
-		w.WriteHeader(http.StatusInternalServerError)
-	}                                                   
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
 
 	playlist, err := actions.VoteOnSong(playlistID, songID, user)
 	if err != nil {
 		log.Println(err)
-		w.WriteHeader(http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
-	
+
 	res, err := json.Marshal(playlist)
 	if err != nil {
 		log.Println(err)
-		w.WriteHeader(http.StatusInternalServerError)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
 	}
 
 	log.Println("Vote added")

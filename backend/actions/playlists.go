@@ -34,6 +34,9 @@ func AddSong(playlistID primitive.ObjectID, song models.Song) (bool, error) {
 		return false, err
 	}
 
+	// Give the song a unique ID, this is not done automatically by Mongo because
+	// song is not a top level object
+	song.ID = primitive.NewObjectID()
 	// Add the song to the slice
 	newSongs := append(playlist.Songs, song)
 	playlist.Songs = newSongs
@@ -266,7 +269,7 @@ func VoteOnSong(playlistID primitive.ObjectID, songID primitive.ObjectID, user m
 	}
 
 	for _, song := range playlist.Songs {
-		if song.ID == songID {
+		if song.ID.String() == songID.String() {
 			if votedOnSong(user, song) {
 				return models.Playlist{}, errors.New("user has already voted on this song")
 			} else {
@@ -276,8 +279,12 @@ func VoteOnSong(playlistID primitive.ObjectID, songID primitive.ObjectID, user m
 		}
 	}
 
+	update := bson.M{
+		"$set": playlist,
+	}
+
 	var updatedPlaylist models.Playlist
-	err = database.PlaylistCollection.FindOneAndUpdate(ctx, filter, playlist).Decode(updatedPlaylist)
+	err = database.PlaylistCollection.FindOneAndUpdate(ctx, filter, update).Decode(&updatedPlaylist)
 	if err != nil {
 		return playlist, err
 	}
