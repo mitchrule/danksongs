@@ -256,13 +256,13 @@ func SearchPlaylists(query string) ([]models.Playlist, error) {
 }
 
 func VoteOnSong(playlistID primitive.ObjectID, songID primitive.ObjectID, user models.User) (models.Playlist, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
+	// ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	// defer cancel()
 
 	var playlist models.Playlist
 	filter := bson.D{primitive.E{Key: "_id", Value: playlistID}}
 
-	err := database.PlaylistCollection.FindOne(ctx, filter).Decode(&playlist)
+	err := database.PlaylistCollection.FindOne(context.TODO(), filter).Decode(&playlist)
 	if err != nil {
 		log.Println("Failed to get playlist")
 		return models.Playlist{}, err
@@ -270,29 +270,29 @@ func VoteOnSong(playlistID primitive.ObjectID, songID primitive.ObjectID, user m
 
 	playlistPtr := &playlist
 
-	for _, song := range playlistPtr.Songs {
+	for i, song := range playlistPtr.Songs {
 		if song.ID == songID {
 			if votedOnSong(user, song) {
 				return models.Playlist{}, errors.New("user has already voted on this song")
 			} else {
 				vote := models.Vote{VoterID: user.ID}
 				song.Votes = append(song.Votes, vote)
-				// fmt.Println("Single song votes: ", song.Votes)
-				// fmt.Println("List of songs: ", playlist.Songs)
+				playlistPtr.Songs[i].Votes = song.Votes
+				break
 			}
 		}
 	}
 
 	update := bson.M{
-		"$set": playlist,
+		"$set": *playlistPtr,
 	}
 
-	err = database.PlaylistCollection.FindOneAndUpdate(ctx, filter, update).Decode(&playlist)
+	err = database.PlaylistCollection.FindOneAndUpdate(context.TODO(), filter, update).Decode(&playlist)
 	if err != nil {
-		return playlist, err
+		return *playlistPtr, err
 	}
 
-	return playlist, nil
+	return *playlistPtr, nil
 }
 
 // Checks if user has already voted on this song
