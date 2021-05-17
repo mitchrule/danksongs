@@ -268,13 +268,17 @@ func VoteOnSong(playlistID primitive.ObjectID, songID primitive.ObjectID, user m
 		return models.Playlist{}, err
 	}
 
-	for _, song := range playlist.Songs {
-		if song.ID.String() == songID.String() {
+	playlistPtr := &playlist
+
+	for _, song := range playlistPtr.Songs {
+		if song.ID == songID {
 			if votedOnSong(user, song) {
 				return models.Playlist{}, errors.New("user has already voted on this song")
 			} else {
 				vote := models.Vote{VoterID: user.ID}
 				song.Votes = append(song.Votes, vote)
+				// fmt.Println("Single song votes: ", song.Votes)
+				// fmt.Println("List of songs: ", playlist.Songs)
 			}
 		}
 	}
@@ -283,13 +287,12 @@ func VoteOnSong(playlistID primitive.ObjectID, songID primitive.ObjectID, user m
 		"$set": playlist,
 	}
 
-	var updatedPlaylist models.Playlist
-	err = database.PlaylistCollection.FindOneAndUpdate(ctx, filter, update).Decode(&updatedPlaylist)
+	err = database.PlaylistCollection.FindOneAndUpdate(ctx, filter, update).Decode(&playlist)
 	if err != nil {
 		return playlist, err
 	}
 
-	return updatedPlaylist, nil
+	return playlist, nil
 }
 
 // Checks if user has already voted on this song

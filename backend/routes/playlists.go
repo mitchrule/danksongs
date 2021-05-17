@@ -316,6 +316,7 @@ func AddSongHandler(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	song.Votes = []models.Vote{}
 
 	success, err := actions.AddSong(playlistID, song)
 
