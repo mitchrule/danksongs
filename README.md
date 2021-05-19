@@ -11,6 +11,13 @@ To run again without having to rebuild, use `docker-compose up`
 
 Shutdown the containers with `docker-compose down`
 
+## Spotify authentication
+
+Inorder for the spotify API querys to work, a ClientID and Secret key is required that can be accessed and created at
+(https://developer.spotify.com/dashboard/applications). From there once they are defined in a root level .env file as
+SPOTIFY_ID and SPOTIFY_SECRET the API should then function as expected. In the future we'll try to integrate this
+into docker.
+
 ## Access
 
 Once the Docker container is running, the containers can be accessed as follows:

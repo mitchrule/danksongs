@@ -10,6 +10,7 @@ import (
 	"github.com/mitchrule/danksongs/actions"
 	"github.com/mitchrule/danksongs/models"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
 // CreateSongHandler for creating new songs
@@ -72,6 +73,64 @@ func CreateSongHandler(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	w.Write(songByte)
+}
+
+// Handles the /songs/search API route
+func SearchSpotifyForSongsHandler(w http.ResponseWriter, r *http.Request) {
+	if r.Header.Values("content-type")[0] != "application/json" {
+		w.WriteHeader(http.StatusBadRequest)
+		res := ErrorResponse{
+			Code:    400,
+			Message: "Incorrect content-type",
+		}
+
+		payload, err := json.Marshal(res)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		w.Write(payload)
+	}
+
+	var searchTerm string
+
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	err = json.Unmarshal(body, &searchTerm)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	songs, err := actions.SearchSpotifyForSongs(searchTerm)
+
+	if err != nil {
+		log.Println(err)
+		if err == mongo.ErrNoDocuments {
+			w.WriteHeader(http.StatusNoContent)
+		} else {
+			w.WriteHeader(http.StatusInternalServerError)
+		}
+		return
+	}
+
+	songsByte, err := json.Marshal(songs)
+
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	} else {
+		// Returns the playlist as a JSON
+		w.WriteHeader(http.StatusOK)
+		w.Write(songsByte)
+	}
 }
 
 func GetSongHandler(w http.ResponseWriter, r *http.Request) {

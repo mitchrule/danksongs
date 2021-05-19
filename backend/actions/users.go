@@ -18,7 +18,8 @@ import (
 )
 
 // The length of time a cookie lasts before it expires
-const SESSION_MINS = time.Duration(24) * time.Hour
+// NOTE: Reduce this for production (Makes it less annoying to test)
+const SESSION_MINS = time.Duration(300) * time.Minute
 
 // CreateUser adds a user to the database
 func CreateUser(user models.User) error {
