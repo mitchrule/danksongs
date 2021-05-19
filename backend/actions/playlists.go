@@ -256,13 +256,13 @@ func SearchPlaylists(query string) ([]models.Playlist, error) {
 }
 
 func VoteOnSong(playlistID primitive.ObjectID, songID primitive.ObjectID, user models.User) (models.Playlist, error) {
-	// ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	// defer cancel()
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
 
 	var playlist models.Playlist
 	filter := bson.D{primitive.E{Key: "_id", Value: playlistID}}
 
-	err := database.PlaylistCollection.FindOne(context.TODO(), filter).Decode(&playlist)
+	err := database.PlaylistCollection.FindOne(ctx, filter).Decode(&playlist)
 	if err != nil {
 		log.Println("Failed to get playlist")
 		return models.Playlist{}, err
@@ -284,15 +284,16 @@ func VoteOnSong(playlistID primitive.ObjectID, songID primitive.ObjectID, user m
 	}
 
 	update := bson.M{
-		"$set": *playlistPtr,
+		"$set": playlist,
 	}
 
-	err = database.PlaylistCollection.FindOneAndUpdate(context.TODO(), filter, update).Decode(&playlist)
+	var oldPlaylist models.Playlist
+	err = database.PlaylistCollection.FindOneAndUpdate(ctx, filter, update).Decode(&oldPlaylist)
 	if err != nil {
-		return *playlistPtr, err
+		return playlist, err
 	}
 
-	return *playlistPtr, nil
+	return playlist, nil
 }
 
 // Checks if user has already voted on this song
