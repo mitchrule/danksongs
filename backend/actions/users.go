@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"log"
-	"os"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -108,38 +107,42 @@ func LoginUser(user models.User) (string, error) {
 // the user as well as revoking their JWT Claim
 func LogoutUser(tknStr string) (bool, error) {
 
-	// Locate the users details within the database
-	// ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	// defer cancel()
+	/*
 
-	// Take the JWT token provided by the user and parse it to retrieve the associated claims
-	// info
+		// Locate the users details within the database
+		// ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		// defer cancel()
 
-	// Initialize a new instance of Claims
-	claim := models.Claims{}
+		// Take the JWT token provided by the user and parse it to retrieve the associated claims
+		// info
 
-	// Parse the JWT string and store the result in claims.
-	tkn, err := jwt.ParseWithClaims(tknStr, &claim, func(token *jwt.Token) (interface{}, error) {
-		// I dont like that for this to work we have to return our secret key
-		// Will fix if I can
-		return []byte(os.Getenv("SECRET_KEY")), nil
-	})
+		// Initialize a new instance of Claims
+		claim := models.Claims{}
 
-	if err != nil || !tkn.Valid {
-		return false, err
-	}
+		// Parse the JWT string and store the result in claims.
+		tkn, err := jwt.ParseWithClaims(tknStr, &claim, func(token *jwt.Token) (interface{}, error) {
+			// I dont like that for this to work we have to return our secret key
+			// Will fix if I can
+			return []byte(os.Getenv("SECRET_KEY")), nil
+		})
 
-	// @TODO find and delete the associated JWT claim
+		if err != nil || !tkn.Valid {
+			return false, err
+		}
 
-	// Retrieve the details of the user from db based on their name
-	// var dbUser models.User
-	// err := database.UsersCollection.FindOne(ctx, bson.M{"_id": userID}).Decode(&dbUser)
-	// if err != nil {
-	// 	return false, err
-	// }
+		// @TODO find and delete the associated JWT claim
+
+		// Retrieve the details of the user from db based on their name
+		// var dbUser models.User
+		// err := database.UsersCollection.FindOne(ctx, bson.M{"_id": userID}).Decode(&dbUser)
+		// if err != nil {
+		// 	return false, err
+		// }
+
+	*/
 
 	// Revoke the JWT claim
-	return false, nil
+	return true, nil
 }
 
 // DeleteUser removes a user from the Database based on

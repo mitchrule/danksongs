@@ -9,7 +9,6 @@ import (
 
 	"github.com/mitchrule/danksongs/actions"
 	"github.com/mitchrule/danksongs/models"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // CreateUserHandler manages the http request
@@ -132,35 +131,20 @@ func LogoutUserHandler(w http.ResponseWriter, r *http.Request) {
 		w.Write(payload)
 	}
 
-	// @TODO Fetch the JWT token from the user cookie
-	// instead of passing it through as a function
-	var userID primitive.ObjectID
+	// Remove the users token cookie
+	// Set the JWT token as a cookie in the user browser incase the header is not consistant
+	http.SetCookie(w, &http.Cookie{
+		Name:    "token",
+		Value:   "",
+		Expires: time.Now(),
+	})
 
-	body, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		log.Println(err)
-	}
+	// Remove the users authorisation header
 
-	err = json.Unmarshal(body, &userID)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		log.Println(err)
-	}
+	// Direct them to the homepage
 
-	success, err := actions.LogoutUser(userID)
-	if err != nil || !success {
-		w.WriteHeader(http.StatusInternalServerError)
-	} else {
-		// Remove the users token cookie
-
-		// Remove the users authorisation header
-
-		// Direct them to the homepage
-
-	}
-	// w.WriteHeader(http.StatusExpectationFailed)
-	// w.Write([]byte("Hit LogoutUserHandler"))
+	// // @TODO Fetch the JWT token from the user cookie
+	// // instead of passing it through as a function
 }
 
 func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
