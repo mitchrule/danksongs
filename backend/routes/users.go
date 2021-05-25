@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/mitchrule/danksongs/actions"
+	"github.com/mitchrule/danksongs/common"
 	"github.com/mitchrule/danksongs/models"
 )
 
@@ -105,7 +106,7 @@ func LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 		http.SetCookie(w, &http.Cookie{
 			Name:    "token",
 			Value:   jwtToken,
-			Expires: time.Now().Add(actions.SESSION_MINS),
+			Expires: time.Now().Add(common.SESSION_MINS),
 		})
 
 		w.WriteHeader(http.StatusCreated)
@@ -136,7 +137,7 @@ func LogoutUserHandler(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{
 		Name:    "token",
 		Value:   "",
-		Expires: time.Now(),
+		Expires: time.Now().Add(common.LOGOUT_TIME),
 	})
 
 	// Remove the users authorisation header

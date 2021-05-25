@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/mitchrule/danksongs/common"
 	"github.com/mitchrule/danksongs/models"
 )
 
@@ -40,7 +41,7 @@ func ValidateUserJWT(tknStr string) (string, error) {
 	}
 
 	// Create a new token with the claims gathered from the previous token
-	expirationTime := time.Now().Add(SESSION_MINS)
+	expirationTime := time.Now().Add(common.SESSION_MINS)
 	claim.ExpiresAt = expirationTime.Unix()
 	newToken, err := GenerateJWT(claim)
 

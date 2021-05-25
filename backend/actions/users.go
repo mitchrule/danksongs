@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
+	"github.com/mitchrule/danksongs/common"
 	"github.com/mitchrule/danksongs/database"
 	"github.com/mitchrule/danksongs/models"
 
@@ -15,10 +16,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
 )
-
-// The length of time a cookie lasts before it expires
-// NOTE: Reduce this for production (Makes it less annoying to test)
-const SESSION_MINS = time.Duration(300) * time.Minute
 
 // CreateUser adds a user to the database
 func CreateUser(user models.User) error {
@@ -74,7 +71,7 @@ func LoginUser(user models.User) (string, error) {
 	}
 
 	// Generate the claims for the JWT token for this session
-	expirationTime := time.Now().Add(SESSION_MINS)
+	expirationTime := time.Now().Add(common.SESSION_MINS)
 
 	// Create a claim based on user info
 	claim := models.Claims{
