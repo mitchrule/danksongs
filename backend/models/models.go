@@ -29,11 +29,12 @@ type Claims struct {
 
 // Song - Models a song
 type Song struct {
-	ID     primitive.ObjectID `bson:"_id"`
-	Title  string             `bson:"title,omitempty"`
-	Artist string             `bson:"artist,omitempty"`
-	URL    string             `bson:"url,omitempty"`
-	Votes  []Vote             `bson:"votes"`
+	ID        primitive.ObjectID `bson:"_id"`
+	Title     string             `bson:"title,omitempty"`
+	Artist    string             `bson:"artist,omitempty"`
+	URI       string             `bson:"url,omitempty"`
+	Votes     []Vote             `bson:"votes"`
+	SpotifyID spotify.ID         `bson:"spotifyid"`
 }
 
 // Playlist - Models a list of songs to be voted on
@@ -60,6 +61,6 @@ type PlaylistData struct {
 // SongPLPair - A song ID and an associated Playlist ID for Add/Remove Song to work
 // with
 type SongPLPair struct {
-	SongID     spotify.ID
+	SongID     primitive.ObjectID
 	PlaylistID primitive.ObjectID
 }

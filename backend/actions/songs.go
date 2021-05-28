@@ -29,12 +29,12 @@ func CreateSong(song models.Song) (primitive.ObjectID, error) {
 }
 
 // NewSong returns a pointer to a song with 0 votes
-func newSong(title string, artists string, uri string) *models.Song {
+func newSong(title string, artist string, uri string) *models.Song {
 	song := models.Song{
-		Title:   title,
-		Artists: artists,
-		URI:     uri,
-		Votes:   []models.Vote{},
+		Title:  title,
+		Artist: artist,
+		URI:    uri,
+		Votes:  []models.Vote{},
 	}
 
 	return &song
@@ -85,11 +85,11 @@ func SearchSpotifyForSongs(query string) ([]models.Song, error) {
 			// Assign the associated
 			// detail from the item to our struct
 			currSong := models.Song{
-				ID:      item.ID,
-				Title:   item.Name,
-				Artists: artistsString,
-				URI:     string(item.URI),
-				Votes:   []models.Vote{},
+				SpotifyID: item.ID,
+				Title:     item.Name,
+				Artist:    artistsString,
+				URI:       string(item.URI),
+				Votes:     []models.Vote{},
 			}
 
 			songs = append(songs, currSong)
