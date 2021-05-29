@@ -1,1 +1,0 @@
-// TODO depending on if we implement an accounts page or not
