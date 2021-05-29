@@ -69,7 +69,7 @@ func NewRouter() *mux.Router {
 	r.HandleFunc("/api/song", GetSongHandler).Methods("GET")
 	r.HandleFunc("/api/song", middleware.AuthMiddleware(UpdateSongHandler)).Methods("PUT")
 	r.HandleFunc("/api/song", middleware.AuthMiddleware(DeleteSongHandler)).Methods("DELETE")
-	r.HandleFunc("/api/song/vote", middleware.AuthMiddleware(VoteHandler)).Methods("POST")
+	// r.HandleFunc("/api/song/vote/{id}", middleware.AuthMiddleware(VoteHandler)).Methods("POST")
 
 	// Spotify API based query
 	r.HandleFunc("/api/song/search", middleware.AuthMiddleware(SearchSpotifyForSongsHandler)).Methods("POST")
@@ -80,8 +80,9 @@ func NewRouter() *mux.Router {
 	// Delete the whole playlist
 	r.HandleFunc("/api/playlist", middleware.AuthMiddleware(DeletePlaylistHandler)).Methods("DELETE")
 	// Add and delete SONGS from playlist
-	r.HandleFunc("/api/playlist/add", middleware.AuthMiddleware(AddSongHandler)).Methods("POST")
+	r.HandleFunc("/api/playlist/{playlistid}/add", middleware.AuthMiddleware(AddSongHandler)).Methods("POST")
 	r.HandleFunc("/api/playlist/remove", middleware.AuthMiddleware(RemoveSongHandler)).Methods("DELETE")
+	r.HandleFunc("/api/vote/{playlistid}/{songid}", middleware.AuthMiddleware(VoteHandler)).Methods("PUT")
 	// Addional functions to retrieve playlist data
 	r.HandleFunc("/api/playlist/getRecent", GetRecentPlaylistsHandler).Methods("GET")
 	r.HandleFunc("/api/playlist/search", middleware.AuthMiddleware(SearchPlaylistsHandler)).Methods("POST")
