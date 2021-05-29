@@ -31,6 +31,19 @@
           "hostPort": 27017
         }
       ]
+    },
+    {
+      "name": "ui",
+      "essential": true,
+      "image": "mitchrule/danksongs-ui",
+      "links": "danksongs-server",
+      "memory": 256,
+      "mountPoints": [
+        {
+          "containerPort": 3000,
+          "hostPort": 80
+        }
+      ]
     }
   ],
   "family": "",
