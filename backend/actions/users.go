@@ -3,7 +3,9 @@ package actions
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
+	"os"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -32,7 +34,7 @@ func CreateUser(user models.User) error {
 	err := database.UsersCollection.FindOne(ctx, bson.M{"name": user.Name}).Err()
 	if err != mongo.ErrNoDocuments {
 		log.Println("Duplicate User...")
-		return errors.New("Duplicate user")
+		return errors.New("duplicate user")
 	}
 
 	// Place in db otherwise
@@ -99,6 +101,37 @@ func LoginUser(user models.User) (string, error) {
 		return "", err
 	}
 	return jwtToken, nil
+}
+
+func GetUserFromToken(tokenString string) (models.User, error) {
+	var username string
+
+	// decode the token
+	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
+
+		return []byte(os.Getenv("SECRET_KEY")), nil
+	})
+
+	if claims, ok := token.Claims.(jwt.MapClaims); ok && token.Valid {
+		username = fmt.Sprintf("%v", claims["username"])
+	} else {
+		log.Println(err)
+		return models.User{}, err
+	}
+
+	// get user by username from db
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	var user models.User
+	err = database.UsersCollection.FindOne(ctx, bson.D{{"name", username}}).Decode(&user)
+	if err != nil {
+		return models.User{}, err
+	}
+
+	return user, nil
 }
 
 ////////////////////////////////////////////////////////////////////

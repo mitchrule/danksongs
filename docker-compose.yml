@@ -9,7 +9,8 @@ services:
     container_name: danksongs-server
     env_file: .env
     ports:
-      - "8080:8080"
+      - "80:80"
+
     restart: always
     links:
       - mongo
@@ -40,6 +41,8 @@ services:
       - mongodata:/data/db
     restart: always
     mem_limit: 256m
+    logging:
+      driver: none
 
 volumes:
   mongodata:

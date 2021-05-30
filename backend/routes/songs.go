@@ -6,8 +6,10 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	"github.com/mitchrule/danksongs/actions"
 	"github.com/mitchrule/danksongs/models"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
@@ -144,5 +146,55 @@ func DeleteSongHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func VoteHandler(w http.ResponseWriter, r *http.Request) {
-	w.Write([]byte("Hit VoteHandler"))
+	// Get playlist
+	// Find song in playlist
+	// 	Increment vote counter
+	// Update playlist database record
+	params := mux.Vars(r)
+	token, err := r.Cookie("token")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusForbidden)
+		return
+	}
+
+	tokenString := token.Value
+
+	playlistID, err := primitive.ObjectIDFromHex(params["playlistid"])
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	songID, err := primitive.ObjectIDFromHex(params["songid"])
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	user, err := actions.GetUserFromToken(tokenString)
+	log.Println(user)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	playlist, err := actions.VoteOnSong(playlistID, songID, user)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	res, err := json.Marshal(playlist)
+	if err != nil {
+		log.Println(err)
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	log.Println("Vote added")
+	w.Write(res)
 }
