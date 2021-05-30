@@ -4,5 +4,6 @@ RUN mkdir /application
 ADD . /application
 WORKDIR /application
 RUN npm install
+RUN npx next build
 EXPOSE 3000
-CMD ["npm", "start"]
+CMD ["npx", "next", "start"]
