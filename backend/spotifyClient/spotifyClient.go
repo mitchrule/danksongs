@@ -9,10 +9,12 @@ import (
 	"golang.org/x/oauth2/clientcredentials"
 )
 
-// Instantiate a blank client
+// Client defined within InitSpotify
 var Client = spotify.Client{}
 
-func initSpotify() {
+// InitSpotify instantitates the spotify client and verifys it with an OAuth token for use
+// within the API
+func InitSpotify() {
 	// Config inorder to access Spotify API (might move to database or make an init for spotify)
 	config := &clientcredentials.Config{
 		ClientID:     os.Getenv("SPOTIFY_ID"),
