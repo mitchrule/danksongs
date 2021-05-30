@@ -14,7 +14,7 @@ func main() {
 	router := routes.NewRouter()
 
 	s := &http.Server{
-		Addr:    ":80",
+		Addr:    ":8080",
 		Handler: router,
 	}
 	log.Println("Listening on 80...")

@@ -1,1 +1,3 @@
-// TODO general formatting
+export default function Playlist() {
+  return <></>;
+}

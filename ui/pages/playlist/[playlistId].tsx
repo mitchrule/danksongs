@@ -1,1 +1,3 @@
-// TODO invidual playlist data
+export default function PlaylistID() {
+  return <></>;
+}

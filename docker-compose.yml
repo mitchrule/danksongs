@@ -9,7 +9,7 @@ services:
     container_name: danksongs-server
     env_file: .env
     ports:
-      - "80:80"
+      - "8080:8080"
 
     restart: always
     links:
