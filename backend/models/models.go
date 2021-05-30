@@ -17,9 +17,7 @@ type User struct {
 
 // A Vote With the user assoicated with it
 type Vote struct {
-	ID      primitive.ObjectID `bson:"_id,omitempty"`
 	VoterID primitive.ObjectID `bson:"_voterid,omitempty"`
-	Time    primitive.DateTime `bson:"time,omitempty"`
 }
 
 // Claims - for the JWT token verification
@@ -31,11 +29,12 @@ type Claims struct {
 
 // Song - Models a song
 type Song struct {
-	ID      spotify.ID `bson:"_id,omitempty"`
-	Title   string     `bson:"title,omitempty"`
-	Artists string     `bson:"artists,omitempty"`
-	URI     string     `bson:"uri,omitempty"`
-	Votes   []Vote     `bson:"votes,omitempty"`
+	ID        primitive.ObjectID `bson:"_id"`
+	Title     string             `bson:"title,omitempty"`
+	Artist    string             `bson:"artist,omitempty"`
+	URI       string             `bson:"url,omitempty"`
+	Votes     []Vote             `bson:"votes"`
+	SpotifyID spotify.ID         `bson:"spotifyid"`
 }
 
 // Playlist - Models a list of songs to be voted on
@@ -44,7 +43,7 @@ type Playlist struct {
 	Name string             `bson:"name,omitempty"`
 
 	// TODO: Change the model into something that can be returned in a json
-	Songs          []Song  `bson:"songs,omitempty"`
+	Songs          []Song  `bson:"songs"`
 	VoteThreshold  uint16  `bson:"votethreshold,omitempty"`
 	VotePreportion float64 `bson:"votepreportion,omitempty"`
 }
@@ -62,6 +61,6 @@ type PlaylistData struct {
 // SongPLPair - A song ID and an associated Playlist ID for Add/Remove Song to work
 // with
 type SongPLPair struct {
-	SongID     spotify.ID
+	SongID     primitive.ObjectID
 	PlaylistID primitive.ObjectID
 }
