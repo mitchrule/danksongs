@@ -3,7 +3,7 @@ language: python
 services:
   - docker
 
-before_script: pip install docker-compose
+before_script: pip install docker-compose && touch .env
 
 script: if [[ "$TRAVIS_BRANCH" == "main" ]]; then
   docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD ;
