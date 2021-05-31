@@ -1,23 +1,23 @@
-import React, { useState } from "react";
-import { FaAlignRight } from "react-icons/fa";
+import styles from "../styles/Navbar.module.css";
 
 export default function Navbar() {
-  const [toggle, setToggle] = useState(false);
-
-  const Toggle = () => {
-    setToggle(!toggle);
-  };
-
   return (
     <>
-      <div className="navBar">
-        <button onClick={Toggle}>
-          <FaAlignRight />
-        </button>
-        <ul className={toggle ? "nav-links show-nav" : "nav-links"}>
-          <li ref="#">Home</li>
-          <li ref="#">Playlists</li>
-          <li ref="#">Account</li>
+      <div className={styles.navbar}>
+        <h1>DankSongs</h1>
+        <ul>
+          <li>
+            <a href="/">Home</a>
+          </li>
+          <li>
+            <a href="/playlists">Playlists</a>
+          </li>
+          <li>
+            <a href="/account">Account</a>
+          </li>
+          <li style={{ float: "right" }}>
+            <a href="/logout">Sign Out</a>
+          </li>
         </ul>
       </div>
     </>
