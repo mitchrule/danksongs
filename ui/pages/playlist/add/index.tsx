@@ -1,2 +1,2 @@
 // TODO
-export default function Index() {<div>Lmao</div>}
+export default function Index() {return (<div>Hello World</div>)}

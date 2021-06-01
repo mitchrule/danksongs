@@ -1,2 +1,2 @@
 // TODO general formatting
-export default function Index() {<div>Lmao</div>}
+export default function Index() {return (<div>lamo</div>)}

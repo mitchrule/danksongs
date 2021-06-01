@@ -1,2 +1,2 @@
 // TODO 
-export default function ServerErrorPage() {<div>Hello World</div>}
+export default function ServerErrorPage() {return (<div>Hello World</div>)}

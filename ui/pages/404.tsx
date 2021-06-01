@@ -1,2 +1,2 @@
 // TODO
-export default function PageNotFound() {<div>Lmao</div>}
+export default function PageNotFound() {return (<div>Hello World</div>)}
