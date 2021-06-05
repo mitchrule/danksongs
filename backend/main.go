@@ -6,10 +6,15 @@ import (
 
 	"github.com/mitchrule/danksongs/database"
 	"github.com/mitchrule/danksongs/routes"
+	"github.com/mitchrule/danksongs/spotifyClient"
 )
 
 func main() {
+
+	// Intantiate MongoDB and
+	// Spotify API's
 	database.InitDatabase()
+	spotifyClient.InitSpotify()
 
 	router := routes.NewRouter()
 
