@@ -40,8 +40,11 @@ func NewRouter() *mux.Router {
 
 	// User routes
 	r.HandleFunc("/api/user", CreateUserHandler).Methods("POST")
+	r.HandleFunc("/api/user", middleware.AuthMiddleware(DeleteUserHandler)).Methods("DELETE")
 	r.HandleFunc("/api/user/login", LoginUserHandler).Methods("POST")
 	r.HandleFunc("/api/user/logout", middleware.AuthMiddleware(LogoutUserHandler)).Methods("POST")
+	// TODO
+	// r.HandleFunc("/api/user/change-password", middleware.AuthMiddleware(ChangePasswordHandler)).Methods("POST")
 
 	return r
 }
