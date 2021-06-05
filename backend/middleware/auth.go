@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/mitchrule/danksongs/actions"
+	"github.com/mitchrule/danksongs/common"
 )
 
 // Middleware for JWT authentication
@@ -62,7 +63,7 @@ func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 			http.SetCookie(w, &http.Cookie{
 				Name:    "token",
 				Value:   newToken,
-				Expires: time.Now().Add(actions.SESSION_MINS),
+				Expires: time.Now().Add(common.SESSION_MINS),
 			})
 			log.Println("new token set...")
 			next.ServeHTTP(w, r)
