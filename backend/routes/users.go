@@ -93,6 +93,7 @@ func LoginUserHandler(w http.ResponseWriter, r *http.Request) {
 	jwtToken, err := actions.LoginUser(user)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		log.Println(err)
 	}
 
 	if err == nil {

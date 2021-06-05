@@ -18,7 +18,6 @@ func AuthMiddleware(next http.HandlerFunc) http.HandlerFunc {
 		var bearerToken string
 		cookie, err := r.Cookie("token")
 
-		// Catchall while I figure out how to use the authorisation header exclusively
 		if r.Header.Get("Authorization") != "" {
 			// Get the token from the auth header
 			bearerToken := r.Header.Get("Authorization")
