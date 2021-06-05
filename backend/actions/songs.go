@@ -3,14 +3,13 @@ package actions
 import (
 	"context"
 	"log"
-	"os"
 	"time"
 
 	"github.com/mitchrule/danksongs/database"
 	"github.com/mitchrule/danksongs/models"
+	"github.com/mitchrule/danksongs/spotifyClient"
 	"github.com/zmb3/spotify"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"golang.org/x/oauth2/clientcredentials"
 )
 
 // CreateSong adds a song to the database
@@ -29,12 +28,12 @@ func CreateSong(song models.Song) (primitive.ObjectID, error) {
 }
 
 // NewSong returns a pointer to a song with 0 votes
-func newSong(title string, artists string, uri string) *models.Song {
+func newSong(title string, artist string, uri string) *models.Song {
 	song := models.Song{
-		Title:   title,
-		Artists: artists,
-		URI:     uri,
-		Votes:   []models.Vote{},
+		Title:  title,
+		Artist: artist,
+		URI:    uri,
+		Votes:  []models.Vote{},
 	}
 
 	return &song
@@ -45,24 +44,11 @@ func newSong(title string, artists string, uri string) *models.Song {
 func SearchSpotifyForSongs(query string) ([]models.Song, error) {
 	log.Println("Searching...")
 
-	// Config inorder to access Spotify API (might move to database or make an init for spotify)
-	config := &clientcredentials.Config{
-		ClientID:     os.Getenv("SPOTIFY_ID"),
-		ClientSecret: os.Getenv("SPOTIFY_SECRET"),
-		TokenURL:     spotify.TokenURL,
-	}
-
 	// log.Println("Current ID")
 	// log.Println(os.LookupEnv("SPOTIFY_ID"))
 
-	token, err := config.Token(context.Background())
-	if err != nil {
-		log.Fatalf("couldn't get token: %v", err)
-	}
-	client := spotify.Authenticator{}.NewClient(token)
-
 	// Query Spotify based on search term
-	results, err := client.Search(query, spotify.SearchTypeTrack)
+	results, err := spotifyClient.Client.Search(query, spotify.SearchTypeTrack)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -85,11 +71,11 @@ func SearchSpotifyForSongs(query string) ([]models.Song, error) {
 			// Assign the associated
 			// detail from the item to our struct
 			currSong := models.Song{
-				ID:      item.ID,
-				Title:   item.Name,
-				Artists: artistsString,
-				URI:     string(item.URI),
-				Votes:   []models.Vote{},
+				SpotifyID: item.ID,
+				Title:     item.Name,
+				Artist:    artistsString,
+				URI:       string(item.URI),
+				Votes:     []models.Vote{},
 			}
 
 			songs = append(songs, currSong)

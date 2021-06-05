@@ -6,17 +6,22 @@ import (
 
 	"github.com/mitchrule/danksongs/database"
 	"github.com/mitchrule/danksongs/routes"
+	"github.com/mitchrule/danksongs/spotifyClient"
 )
 
 func main() {
+
+	// Intantiate MongoDB and
+	// Spotify API's
 	database.InitDatabase()
+	spotifyClient.InitSpotify()
 
 	router := routes.NewRouter()
 
 	s := &http.Server{
-		Addr:    ":8080",
+		Addr:    ":80",
 		Handler: router,
 	}
-	log.Println("Listening on 8080...")
+	log.Println("Listening on 80...")
 	s.ListenAndServe()
 }

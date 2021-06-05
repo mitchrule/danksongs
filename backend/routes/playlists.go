@@ -6,6 +6,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/gorilla/mux"
 	"github.com/mitchrule/danksongs/actions"
 	"github.com/mitchrule/danksongs/models"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -293,7 +294,14 @@ func AddSongHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var ids models.SongPLPair
+	params := mux.Vars(r)
+	playlistID, err := primitive.ObjectIDFromHex(params["playlistid"])
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusBadRequest)
+	}
+
+	var song models.Song
 
 	body, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -302,14 +310,15 @@ func AddSongHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = json.Unmarshal(body, &ids)
+	err = json.Unmarshal(body, &song)
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+	song.Votes = []models.Vote{}
 
-	success, err := actions.AddSong(ids)
+	success, err := actions.AddSong(playlistID, song)
 
 	if err != nil || !success {
 		log.Println(err)

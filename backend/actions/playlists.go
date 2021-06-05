@@ -2,6 +2,7 @@ package actions
 
 import (
 	"context"
+	"errors"
 	"log"
 	"time"
 
@@ -18,39 +19,34 @@ const NUM_PLAYLISTS_RETURNED = 30
 // AddSong will add a song to the Songs section of a playlist by referencing
 // its object id to the playlist and return a true value if successful
 // NOTE: idk if i should use the entire model or just the Id's
-func AddSong(ids models.SongPLPair) (bool, error) {
+func AddSong(playlistID primitive.ObjectID, song models.Song) (bool, error) {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 
-	// Retrieve Playlist and Song
-	var playList models.Playlist
-	var song models.Song
+	// Retrieve Playlist
+	var playlist models.Playlist
 
-	err := database.PlaylistCollection.FindOne(ctx, bson.M{"_id": ids.PlaylistID}).Decode(&playList)
-
-	// Error Check
-	if err != nil {
-		return false, err
-	}
-
-	err = database.SongsCollection.FindOne(ctx, bson.M{"_id": ids.SongID}).Decode(&song)
+	err := database.PlaylistCollection.FindOne(ctx, bson.M{"_id": playlistID}).Decode(&playlist)
 
 	// Error Check
 	if err != nil {
 		return false, err
 	}
 
+	// Give the song a unique ID, this is not done automatically by Mongo because
+	// song is not a top level object
+	song.ID = primitive.NewObjectID()
 	// Add the song to the slice
-	newSongs := append(playList.Songs, song)
-	playList.Songs = newSongs
+	newSongs := append(playlist.Songs, song)
+	playlist.Songs = newSongs
 
-	log.Println("Current New Playlist")
-	log.Println(playList)
+	log.Println("New Playlist")
+	log.Println(playlist)
 
 	// Update playlist
 	var oldPlaylist models.Playlist
-	err = database.PlaylistCollection.FindOneAndReplace(ctx, bson.M{"_id": playList.ID}, playList).Decode(&oldPlaylist)
+	err = database.PlaylistCollection.FindOneAndReplace(ctx, bson.M{"_id": playlist.ID}, playlist).Decode(&oldPlaylist)
 
 	// Return result
 	if err != nil {
@@ -265,4 +261,55 @@ func SearchPlaylists(query string) ([]models.Playlist, error) {
 	} else {
 		return playLists, nil
 	}
+}
+
+func VoteOnSong(playlistID primitive.ObjectID, songID primitive.ObjectID, user models.User) (models.Playlist, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	var playlist models.Playlist
+	filter := bson.D{primitive.E{Key: "_id", Value: playlistID}}
+
+	err := database.PlaylistCollection.FindOne(ctx, filter).Decode(&playlist)
+	if err != nil {
+		log.Println("Failed to get playlist")
+		return models.Playlist{}, err
+	}
+
+	playlistPtr := &playlist
+
+	for i, song := range playlistPtr.Songs {
+		if song.ID == songID {
+			if votedOnSong(user, song) {
+				return models.Playlist{}, errors.New("user has already voted on this song")
+			} else {
+				vote := models.Vote{VoterID: user.ID}
+				song.Votes = append(song.Votes, vote)
+				playlistPtr.Songs[i].Votes = song.Votes
+				break
+			}
+		}
+	}
+
+	update := bson.M{
+		"$set": playlist,
+	}
+
+	var oldPlaylist models.Playlist
+	err = database.PlaylistCollection.FindOneAndUpdate(ctx, filter, update).Decode(&oldPlaylist)
+	if err != nil {
+		return playlist, err
+	}
+
+	return playlist, nil
+}
+
+// Checks if user has already voted on this song
+func votedOnSong(user models.User, song models.Song) bool {
+	for _, vote := range song.Votes {
+		if vote.VoterID == user.ID {
+			return true
+		}
+	}
+	return false
 }
