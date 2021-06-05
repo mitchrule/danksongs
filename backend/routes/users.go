@@ -140,15 +140,31 @@ func LogoutUserHandler(w http.ResponseWriter, r *http.Request) {
 		Expires: time.Now().Add(common.LOGOUT_TIME),
 	})
 
-	// Remove the users authorisation header
+	// TODO: Remove the users authorisation header
 
-	// Direct them to the homepage
-
-	// // @TODO Fetch the JWT token from the user cookie
-	// // instead of passing it through as a function
 }
 
+// Handles delete request
 func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusExpectationFailed)
-	w.Write([]byte("Hit DeleteUserHandler"))
+
+	// Get the user JWT Token from the Cookie
+	token, err := r.Cookie("token")
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusForbidden)
+		return
+	}
+	tokenString := token.Value
+
+	// Delete user
+	success, err := actions.DeleteUser(tokenString)
+	if err != nil || !success {
+		log.Println("-----Error In Action-----")
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+
+	// Returns nothing other than the success statement
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte("User Deleted"))
 }

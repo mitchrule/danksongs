@@ -14,7 +14,6 @@ import (
 	"github.com/mitchrule/danksongs/models"
 
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -101,49 +100,37 @@ func LoginUser(user models.User) (string, error) {
 	return jwtToken, nil
 }
 
-// LogoutUser takes a userID and removes the
-// session token that the user has stored for
-// the user as well as revoking their JWT Claim
+// LogoutUser takes a userID
 func LogoutUser(tknStr string) (bool, error) {
-	/*
-		// Locate the users details within the database
-		// ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		// defer cancel()
-
-		// Take the JWT token provided by the user and parse it to retrieve the associated claims
-		// info
-
-		// Initialize a new instance of Claims
-		claim := models.Claims{}
-
-		// Parse the JWT string and store the result in claims.
-		tkn, err := jwt.ParseWithClaims(tknStr, &claim, func(token *jwt.Token) (interface{}, error) {
-			// I dont like that for this to work we have to return our secret key
-			// Will fix if I can
-			return []byte(os.Getenv("SECRET_KEY")), nil
-		})
-
-		if err != nil || !tkn.Valid {
-			return false, err
-		}
-
-		// @TODO find and delete the associated JWT claim
-		// Retrieve the details of the user from db based on their name
-		// var dbUser models.User
-		// err := database.UsersCollection.FindOne(ctx, bson.M{"_id": userID}).Decode(&dbUser)
-		// if err != nil {
-		// 	return false, err
-		// }
-	*/
-
-	// Revoke the JWT claim
-	return true, nil
+	// TODO if other backend work is required
+	return false, nil
 }
 
 // DeleteUser removes a user from the Database based on
 // the userID provided and logs the user out in the process
-func DeleteUser(userID primitive.ObjectID) (bool, error) {
-	return false, nil
+func DeleteUser(tknStr string) (bool, error) {
+
+	// Locate the users details within the database
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	// Take the JWT token provided by the user and parse it to retrieve the associated user
+	// info
+	user, err := GetUserFromToken(tknStr)
+
+	if err != nil {
+		return false, err
+	}
+
+	// @TODO find and delete the associated JWT claim
+	// Retrieve the details of the user from db based on their name
+	var dbUser models.User
+	err = database.UsersCollection.FindOneAndDelete(ctx, bson.M{"name": user.Name}).Decode(&dbUser)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
 }
 
 // GetUserFromToken extracts the username from a JWT token
