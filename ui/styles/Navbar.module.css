@@ -1,4 +1,4 @@
-@import "globals.css";
+/* @import "globals.css"; */
 
 .navbar {
   margin: 0;
@@ -24,6 +24,7 @@
   text-align: center;
   padding: 14px 16px;
   text-decoration: none;
+  border-radius: 10px;
 }
 
 .navbar li a:hover {
@@ -34,7 +35,7 @@
   display: block;
   float: left;
   margin: 0;
-  padding: 0px 24px;
+  padding: 5px 24px;
   color: white;
   background-color: #394648;
   overflow: hidden;
