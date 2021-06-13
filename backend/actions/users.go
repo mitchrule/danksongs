@@ -177,3 +177,6 @@ func getHash(pwd []byte) string {
 	}
 	return string(hash)
 }
+
+func ChangePassword() {
+}
