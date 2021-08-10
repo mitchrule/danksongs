@@ -1,1 +1,7 @@
 @import url("https://fonts.googleapis.com/css2?family=Quicksand:wght@345&display=swap");
+
+.Typography {
+  font-family: "Quicksand";
+  font-style: normal;
+  font-weight: 700;
+}
