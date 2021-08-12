@@ -3,6 +3,6 @@ import { Container } from "next/app";
 
 export default function Title() {
   return (
-      <Typography>danksongs</Typography>
+      <Typography>Danksongs</Typography>
   );
 }
