@@ -1,4 +1,4 @@
-import { Box, Typography, useTheme } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
 import styles from '../styles/Title.module.css';
 
 export default function Title() {
