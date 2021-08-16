@@ -4,6 +4,7 @@ import { Formik, Field, Form, FormikHelpers } from "formik";
 import { Container } from "next/app";
 import { Box, Button, Typography } from '@material-ui/core';
 import { useState } from 'react';
+import { useRouter } from 'next/router'
 
 const API_URL = '/';
 const FORM_DEFAULT = 'sign-in';
@@ -22,17 +23,21 @@ interface SignUpValues {
   
 
 export default function LoginForm() {
+    const router = useRouter();
     const [formScreen, setFormScreen] = useState(FORM_DEFAULT);
 
     const handleSignIn = async ({}) => {
         // TODO
         const res = await fetch(API_URL);
+        router.push('TODO');
     }
     
     const handleSignUp = async ({}) => {
         // TODO
         const res = await fetch(API_URL);
+        router.push('TODO');
     } 
+
     
     const handleClick = () => {
         if (formScreen === 'sign-up') {
