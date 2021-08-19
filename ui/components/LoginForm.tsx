@@ -29,13 +29,13 @@ export default function LoginForm() {
     const handleSignIn = async ({}) => {
         // TODO
         const res = await fetch(API_URL);
-        router.push('TODO');
+        router.push('home');
     }
     
     const handleSignUp = async ({}) => {
         // TODO
         const res = await fetch(API_URL);
-        router.push('TODO');
+        router.push('home');
     } 
 
     
