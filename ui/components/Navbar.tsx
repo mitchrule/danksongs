@@ -1,5 +1,8 @@
 import styles from "../styles/Navbar.module.css";
 
+// @TODO make tabs only appear
+// if the user is logged in 
+
 export default function Navbar() {
   return (
     <>

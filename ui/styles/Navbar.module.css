@@ -1,5 +1,4 @@
-/* @import "globals.css"; */
-
+/* // @import "globals.css"; */
 .navbar {
   margin: 0;
   padding: 14px;
@@ -9,7 +8,6 @@
 .navbar ul {
   list-style-type: none;
   margin: 0;
-  /* padding: 14px; */
   overflow: hidden;
   background-color: #394648;
 }

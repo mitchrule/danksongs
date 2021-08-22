@@ -1,6 +1,5 @@
 import Head from 'next/head'
 import Image from 'next/image'
-import styles from '../styles/Home.module.css'
 import LoginForm from '../components/LoginForm';
 import Title from '../components/Title';
 import Box from '@material-ui/core/Box';
@@ -13,7 +12,7 @@ export default function Home() {
     <Grid container spacing={3} justifyContent='center'>
       <Grid item xs={6} sm={3} >
         <Box>
-          <i>idk what to put here</i>
+          <i>idk what to put here, probably a popular playlist</i>
         </Box>
       </Grid>
       <Grid item xs={6} sm={3} >
