@@ -5,6 +5,7 @@ import { Container } from "next/app";
 import { Box, Button, Typography } from '@material-ui/core';
 import { useState } from 'react';
 import { useRouter } from 'next/router'
+import styles from '../styles/LoginForm.module.css';
 
 const API_URL = '/';
 const FORM_DEFAULT = 'sign-in';
@@ -67,13 +68,27 @@ export default function LoginForm() {
                 }}
             >
                 <Form>
-                <Typography>Username</Typography>
-                <Field id="userName" name="userName" placeholder="test" />
-
-                <Typography>Password</Typography>
-                <Field
-                    id="email"
-                    name="email"
+                <Typography 
+                    align='center'
+                    variant='h6'
+                >
+                    Username
+                </Typography>
+                <Field 
+                    className={styles.inputField}
+                    id="userName"
+                    name="userName"
+                    placeholder="test" 
+                />
+                <Typography 
+                    align='center'
+                    variant='h6'
+                >      
+                    Password</Typography>
+                <Field 
+                    className={styles.inputField}
+                    id="password"
+                    name="password"
                     placeholder="password"
                     type="password"
                 />
@@ -101,18 +116,40 @@ export default function LoginForm() {
             }}
         >
             <Form>
-            <Typography>Username</Typography>
-            <Field id="userName" name="userName" placeholder="test" />
+            <Typography 
+                align='center'
+                variant='h6'
+            >
+                Username
+            </Typography>
+            <Field 
+                className={styles.inputField}
+                id="userName"
+                name="userName"
+                placeholder="test" 
+            />
 
-            <Typography>Password</Typography>
+            <Typography 
+                align='center'
+                variant='h6'
+            >
+                Password
+            </Typography>
             <Field
+                className={styles.inputField}
                 id="password1"
                 name="password1"
                 placeholder="password"
                 type="password"
             />
-            <Typography>Re-Enter Password</Typography>
+            <Typography 
+                align='center'
+                variant='h6'
+            >
+                Re-Enter Password
+            </Typography>
             <Field
+                className={styles.inputField}
                 id="password2"
                 name="password2"
                 placeholder="password again"
