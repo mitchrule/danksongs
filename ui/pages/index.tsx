@@ -7,7 +7,10 @@ import DevNotes from '../components/DevNotes';
 import { Container } from 'next/app';
 import { Grid } from '@material-ui/core';
 
-export default function Home() {
+export default function Home({ data }) {
+
+  console.log('From getStaticProps: ', data);
+
   return (
     <Grid container spacing={3} justifyContent='center'>
       <Grid item xs={6} sm={3} >
@@ -28,4 +31,25 @@ export default function Home() {
       </Grid>
     </Grid>
   );
+}
+
+// Use this for api requests
+export async function getStaticProps() {
+
+  /** Why to use this:
+   *  Better SEO 🕶
+      Performance 🚀
+      Can be hosted in CDN 🌍
+      Doesn't need to have JavaScript to run (mostly HTML) ⚙️
+      Very fewer things to parse from server to client 🌬 
+  */
+
+
+  const res = 'put API query here';
+
+  return {
+    props: {
+      data: res,
+    }
+  }
 }
