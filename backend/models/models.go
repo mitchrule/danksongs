@@ -15,6 +15,13 @@ type User struct {
 	Password string             `bson:"password"`
 }
 
+// NewUser - Models a user for sign up or a user to change their password
+type NewUser struct {
+	ID        primitive.ObjectID `bson:"_id,omitempty"`
+	Password1 string             `bson:"password1"`
+	Password2 string             `bson:"password2"`
+}
+
 // A Vote With the user assoicated with it
 type Vote struct {
 	VoterID primitive.ObjectID `bson:"_voterid,omitempty"`
