@@ -18,6 +18,7 @@ type User struct {
 // NewUser - Models a user for sign up or a user to change their password
 type NewUser struct {
 	ID        primitive.ObjectID `bson:"_id,omitempty"`
+	Name      string             `bson:"name,omitempty"`
 	Password1 string             `bson:"password1"`
 	Password2 string             `bson:"password2"`
 }

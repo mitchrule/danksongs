@@ -133,6 +133,36 @@ func DeleteUser(tknStr string) (bool, error) {
 	return true, nil
 }
 
+func ChangePassword(user models.NewUser) (bool, error) {
+	log.Println("Chainging Password...")
+
+	if user.Password1 != user.Password2 {
+		return false, fmt.Errorf("Error: Passwords do not match")
+	}
+
+	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+
+	var oldUser models.User
+
+	// Generate new user entry with changed password and store in db
+	var userWithNewPWord models.User
+
+	userWithNewPWord.ID = user.ID
+	userWithNewPWord.Name = user.Name
+	userWithNewPWord.Password = user.Password1
+
+	err := database.UsersCollection.FindOneAndReplace(ctx, bson.M{"name": user.Name}, userWithNewPWord).Decode(&oldUser)
+
+	log.Println("Changed Pasword for: ", oldUser.Name)
+
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
 // GetUserFromToken extracts the username from a JWT token
 func GetUserFromToken(tokenString string) (models.User, error) {
 	var username string
@@ -176,7 +206,4 @@ func getHash(pwd []byte) string {
 		log.Println(err)
 	}
 	return string(hash)
-}
-
-func ChangePassword() {
 }

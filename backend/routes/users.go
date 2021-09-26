@@ -171,5 +171,46 @@ func DeleteUserHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 func ChangePasswordHandler(w http.ResponseWriter, r *http.Request) {
-	w.WriteHeader(http.StatusOK)
+
+	// Check to see if the request is the correct format
+	if r.Header.Values("content-type")[0] != "application/json" {
+		w.WriteHeader(http.StatusBadRequest)
+		res := ErrorResponse{
+			Code:    400,
+			Message: "Incorrect content-type",
+		}
+
+		payload, err := json.Marshal(res)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		log.Println("Writing error payload..")
+		w.Write(payload)
+	}
+
+	var newUser models.NewUser
+
+	body, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+
+	err = json.Unmarshal(body, &newUser)
+	if err != nil {
+		log.Println("--Internal error in unmarshalling--")
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	// err = actions.ChangePassword(newUser)
+	if err != nil {
+		log.Println("--Internal error in action--")
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	if err == nil {
+		w.WriteHeader(http.StatusCreated)
+	}
 }
